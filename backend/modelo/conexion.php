@@ -4,7 +4,7 @@ class BD {
     private $conexion;
 
     private function __construct() {
-        //Deberia poner esta informacion  en otro archivo por seguridad
+        //Deberia poner esta informacion  en otro archivo por seguridad--Preguntar victor
         $host = "localhost";
         $db = "motorfix";
         $user = "root";
