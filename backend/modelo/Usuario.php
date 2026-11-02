@@ -124,7 +124,7 @@ class Usuario {
         return password_verify($passwordEscrita, $hashGuardado);
     }
 
-    // Actualiza los datos del usuario (NO la contraseña, eso va en updatePassword)
+    // Actualiza los datos del usuario (NO la contraseña,eso va en updatePassword)
     public function updateUsuario() {
         try {
             $conexion = BD::getInstance()->getConexion();

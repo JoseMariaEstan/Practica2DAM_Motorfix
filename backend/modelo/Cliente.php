@@ -27,7 +27,7 @@ class Cliente {
         $this->poblacion     = $poblacion;
         $this->codigo_postal = $codigo_postal;
     }
-    // ---------- GETTERS ----------
+    //Getters
     public function getIdCliente(){
         return $this->id_cliente;
     }
@@ -59,7 +59,7 @@ class Cliente {
         return $this->codigo_postal;
     }
 
-    // ---------- SETTERS ----------
+    //Setters
     public function setIdCliente($id_cliente){
         $this->id_cliente = $id_cliente;
     }
@@ -99,7 +99,7 @@ class Cliente {
             $stmt = $conexion->prepare($sql);
 
             $resultado = $stmt->execute([
-                ':id_usuario'    => $this->id_usuario,   //null si lo da de alta oficina sin cuenta web
+                ':id_usuario'    => $this->id_usuario,   
                 ':dni'           => $this->dni,
                 ':nombre'        => $this->nombre,
                 ':apellidos'     => $this->apellidos,
@@ -138,20 +138,6 @@ class Cliente {
             $sql = "SELECT * FROM cliente WHERE id_usuario = :id_usuario";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':id_usuario' => $this->id_usuario]);
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
-
-    // Busca un cliente por DNI (buscador de oficina y comprobar duplicados antes de insertar)
-    public function obtenerPorDni() {
-        try {
-            $conexion = BD::getInstance()->getConexion();
-            $sql = "SELECT * FROM cliente WHERE dni = :dni";
-            $stmt = $conexion->prepare($sql);
-            $stmt->execute([':dni' => $this->dni]);
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -198,3 +184,4 @@ class Cliente {
 }
 //TODO
 //Deberia poner una funcion para el rol oficina que le permita obtener un listado de clientes?
+//Añadir al rol de oficina la opcion de buscar cliente por dni?

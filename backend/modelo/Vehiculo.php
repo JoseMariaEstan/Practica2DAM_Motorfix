@@ -120,7 +120,6 @@ class Vehiculo {
             return false;
         }
     }
- 
     // Devuelve todos los vehículos de un cliente
     public function obtenerPorCliente() {
         try {
@@ -128,19 +127,6 @@ class Vehiculo {
             $sql = "SELECT * FROM vehiculo WHERE id_cliente = :id_cliente ORDER BY marca, modelo";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':id_cliente' => $this->id_cliente]);
- 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
-    // Busca un vehículo por matrícula (buscador de oficina y comprobar duplicados antes de insertar)
-    public function obtenerPorMatricula() {
-        try {
-            $conexion = BD::getInstance()->getConexion();
-            $sql = "SELECT * FROM vehiculo WHERE matricula = :matricula";
-            $stmt = $conexion->prepare($sql);
-            $stmt->execute([':matricula' => $this->matricula]);
  
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -184,3 +170,5 @@ class Vehiculo {
         }
     }
 }
+//TODO
+//Buscador por matricula en el rol de oficina?
