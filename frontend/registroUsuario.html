@@ -16,7 +16,6 @@
                 <h1>Crear cuenta</h1>
                 <h4>Regístrate para pedir cita y consultar el estado de tus reparaciones.</h4>
             </div>
-            <!-- El formulario no se envía solo: el botón es type="button" y lo gestiona registro.js con fetch() -->
             <form id="formRegistro" >
                 <fieldset>
                     <legend>Datos personales</legend>
@@ -56,11 +55,9 @@
                         <input type="password" id="password2" name="password2" minlength="8" required>
                     </div>
                 </fieldset>
-                <!-- Aquí se mostrarán los mensajes de error o de éxito desde JS -->
-                <p id="mensaje" role="alert"></p>
                 <button type="button" id="registrar">Crear cuenta</button>
             </form>
-            <div>¿Ya tienes cuenta? <a href="login.html">Iniciar sesión</a></div>
+            <div>¿Ya tienes cuenta? <a href="index.html">Iniciar sesión</a></div>
         </section>
 
         <footer>
