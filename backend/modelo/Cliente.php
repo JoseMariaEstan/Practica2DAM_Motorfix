@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . "/Conexion.php";
-
+require_once __DIR__ . "/BD.php";
 class Cliente {
     private $id_cliente;
     private $id_usuario;
@@ -94,7 +93,7 @@ class Cliente {
 
     public function insertCliente() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "INSERT INTO cliente (id_usuario, dni, nombre, apellidos, telefono, email, direccion, poblacion, codigo_postal)
                     VALUES (:id_usuario, :dni, :nombre, :apellidos, :telefono, :email, :direccion, :poblacion, :codigo_postal)";
             $stmt = $conexion->prepare($sql);
@@ -121,7 +120,7 @@ class Cliente {
     // Devuelve el cliente por su id
     public function getCliente() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT * FROM cliente WHERE id_cliente = :id_cliente";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':id_cliente' => $this->id_cliente]);
@@ -135,7 +134,7 @@ class Cliente {
     // Devuelve la ficha del cliente que corresponde a un usuario (el que ha iniciado sesión)
     public function obtenerPorUsuario() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT * FROM cliente WHERE id_usuario = :id_usuario";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':id_usuario' => $this->id_usuario]);
@@ -149,7 +148,7 @@ class Cliente {
     // Busca un cliente por DNI (buscador de oficina y comprobar duplicados antes de insertar)
     public function obtenerPorDni() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT * FROM cliente WHERE dni = :dni";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':dni' => $this->dni]);
@@ -162,7 +161,7 @@ class Cliente {
 
     public function updateCliente() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "UPDATE cliente SET dni = :dni, nombre = :nombre, apellidos = :apellidos, telefono = :telefono,
                     email = :email, direccion = :direccion, poblacion = :poblacion, codigo_postal = :codigo_postal
                     WHERE id_cliente = :id_cliente";
@@ -187,7 +186,7 @@ class Cliente {
     // Devuelve false si el cliente tiene vehículos (la FK tiene ON DELETE RESTRICT)
     public function deleteCliente() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "DELETE FROM cliente WHERE id_cliente = :id_cliente";
             $stmt = $conexion->prepare($sql);
 

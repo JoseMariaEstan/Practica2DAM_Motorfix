@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/Conexion.php";
+require_once __DIR__ . "/BD.php";
 
 class Vehiculo {
     private $id_vehiculo;
@@ -85,7 +85,7 @@ class Vehiculo {
     
     public function insertVehiculo() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "INSERT INTO vehiculo (id_cliente, matricula, marca, modelo, anio, color, kilometros, combustible)
                     VALUES (:id_cliente, :matricula, :marca, :modelo, :anio, :color, :kilometros, :combustible)";
             $stmt = $conexion->prepare($sql);
@@ -110,7 +110,7 @@ class Vehiculo {
     // Devuelve el vehículo por su id
     public function obtenerVehiculo() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT * FROM vehiculo WHERE id_vehiculo = :id_vehiculo";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':id_vehiculo' => $this->id_vehiculo]);
@@ -124,7 +124,7 @@ class Vehiculo {
     // Devuelve todos los vehículos de un cliente
     public function obtenerPorCliente() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT * FROM vehiculo WHERE id_cliente = :id_cliente ORDER BY marca, modelo";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':id_cliente' => $this->id_cliente]);
@@ -137,7 +137,7 @@ class Vehiculo {
     // Busca un vehículo por matrícula (buscador de oficina y comprobar duplicados antes de insertar)
     public function obtenerPorMatricula() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT * FROM vehiculo WHERE matricula = :matricula";
             $stmt = $conexion->prepare($sql);
             $stmt->execute([':matricula' => $this->matricula]);
@@ -150,7 +150,7 @@ class Vehiculo {
     //Se modifican solo los datos estrictamente  del vehiculo
     public function updateVehiculo() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "UPDATE vehiculo SET matricula = :matricula, marca = :marca, modelo = :modelo, anio = :anio,
                     color = :color, kilometros = :kilometros, combustible = :combustible
                     WHERE id_vehiculo = :id_vehiculo";
@@ -174,7 +174,7 @@ class Vehiculo {
     // Devuelve false si el vehículo tiene citas
     public function deleteVehiculo() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "DELETE FROM vehiculo WHERE id_vehiculo = :id_vehiculo";
             $stmt = $conexion->prepare($sql);
  

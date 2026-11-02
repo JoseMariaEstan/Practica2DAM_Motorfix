@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . "/Conexion.php";
-
+require_once __DIR__ . "/BD.php";
 class Usuario {
     private $id_usuario;
     private $email;
@@ -68,7 +67,7 @@ class Usuario {
     // Inserta el usuario. La contraseña se guarda cifrada con BCrypt
     public function insertUsuario() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "INSERT INTO usuario (email, password, nombre, apellidos, rol, activo)
                     VALUES (:email, :password, :nombre, :apellidos, :rol, :activo)";
             $stmt = $conexion->prepare($sql);
@@ -93,7 +92,7 @@ class Usuario {
     // Devuelve el usuario por su id (sin la contraseña)
     public function obtenerUsuario() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT id_usuario, email, nombre, apellidos, rol, activo, fecha_alta
                     FROM usuario WHERE id_usuario = :id_usuario";
             $stmt = $conexion->prepare($sql);
@@ -108,7 +107,7 @@ class Usuario {
     // Busca un usuario activo por email (se usa en el login). Incluye la contraseña cifrada
     public function getByEmail() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT id_usuario, email, password, nombre, apellidos, rol
                     FROM usuario WHERE email = :email AND activo = 1";
             $stmt = $conexion->prepare($sql);
@@ -128,7 +127,7 @@ class Usuario {
     // Actualiza los datos del usuario (NO la contraseña, eso va en updatePassword)
     public function updateUsuario() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "UPDATE usuario SET email = :email, nombre = :nombre, apellidos = :apellidos,
                     rol = :rol, activo = :activo WHERE id_usuario = :id_usuario";
             $stmt = $conexion->prepare($sql);
@@ -149,7 +148,7 @@ class Usuario {
     // Cambia la contraseña, cifrándola de nuevo
     public function updateContra() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "UPDATE usuario SET password = :password WHERE id_usuario = :id_usuario";
             $stmt = $conexion->prepare($sql);
 
@@ -164,7 +163,7 @@ class Usuario {
 
     public function deleteUsuario() {
         try {
-            $conexion = Conexion::getInstancia()->getConexion();
+            $conexion = BD::getInstance()->getConexion();
             $sql = "DELETE FROM usuario WHERE id_usuario = :id_usuario";
             $stmt = $conexion->prepare($sql);
 
