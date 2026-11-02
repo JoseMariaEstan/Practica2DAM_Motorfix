@@ -92,5 +92,110 @@ class Cliente {
         $this->codigo_postal = $codigo_postal;
     }
 
+    public function insertCliente() {
+        try {
+            $conexion = Conexion::getInstancia()->getConexion();
+            $sql = "INSERT INTO cliente (id_usuario, dni, nombre, apellidos, telefono, email, direccion, poblacion, codigo_postal)
+                    VALUES (:id_usuario, :dni, :nombre, :apellidos, :telefono, :email, :direccion, :poblacion, :codigo_postal)";
+            $stmt = $conexion->prepare($sql);
 
+            $resultado = $stmt->execute([
+                ':id_usuario'    => $this->id_usuario,   //null si lo da de alta oficina sin cuenta web
+                ':dni'           => $this->dni,
+                ':nombre'        => $this->nombre,
+                ':apellidos'     => $this->apellidos,
+                ':telefono'      => $this->telefono,
+                ':email'         => $this->email,
+                ':direccion'     => $this->direccion,
+                ':poblacion'     => $this->poblacion,
+                ':codigo_postal' => $this->codigo_postal
+            ]);
+
+            $this->id_cliente = $conexion->lastInsertId();
+            return $resultado;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Devuelve el cliente por su id
+    public function getCliente() {
+        try {
+            $conexion = Conexion::getInstancia()->getConexion();
+            $sql = "SELECT * FROM cliente WHERE id_cliente = :id_cliente";
+            $stmt = $conexion->prepare($sql);
+            $stmt->execute([':id_cliente' => $this->id_cliente]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Devuelve la ficha del cliente que corresponde a un usuario (el que ha iniciado sesión)
+    public function obtenerPorUsuario() {
+        try {
+            $conexion = Conexion::getInstancia()->getConexion();
+            $sql = "SELECT * FROM cliente WHERE id_usuario = :id_usuario";
+            $stmt = $conexion->prepare($sql);
+            $stmt->execute([':id_usuario' => $this->id_usuario]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Busca un cliente por DNI (buscador de oficina y comprobar duplicados antes de insertar)
+    public function obtenerPorDni() {
+        try {
+            $conexion = Conexion::getInstancia()->getConexion();
+            $sql = "SELECT * FROM cliente WHERE dni = :dni";
+            $stmt = $conexion->prepare($sql);
+            $stmt->execute([':dni' => $this->dni]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function updateCliente() {
+        try {
+            $conexion = Conexion::getInstancia()->getConexion();
+            $sql = "UPDATE cliente SET dni = :dni, nombre = :nombre, apellidos = :apellidos, telefono = :telefono,
+                    email = :email, direccion = :direccion, poblacion = :poblacion, codigo_postal = :codigo_postal
+                    WHERE id_cliente = :id_cliente";
+            $stmt = $conexion->prepare($sql);
+
+            return $stmt->execute([
+                ':id_cliente'    => $this->id_cliente,
+                ':dni'           => $this->dni,
+                ':nombre'        => $this->nombre,
+                ':apellidos'     => $this->apellidos,
+                ':telefono'      => $this->telefono,
+                ':email'         => $this->email,
+                ':direccion'     => $this->direccion,
+                ':poblacion'     => $this->poblacion,
+                ':codigo_postal' => $this->codigo_postal
+            ]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Devuelve false si el cliente tiene vehículos (la FK tiene ON DELETE RESTRICT)
+    public function deleteCliente() {
+        try {
+            $conexion = Conexion::getInstancia()->getConexion();
+            $sql = "DELETE FROM cliente WHERE id_cliente = :id_cliente";
+            $stmt = $conexion->prepare($sql);
+
+            return $stmt->execute([':id_cliente' => $this->id_cliente]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }
+//TODO
+//Deberia poner una funcion para el rol oficina que le permita obtener un listado de clientes?
