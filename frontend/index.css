@@ -1,0 +1,170 @@
+/* =====================================================================
+   MotorFix - Estilos básicos (login y registro)
+   Responsive sin media queries: anchos máximos, porcentajes y flexbox
+   ===================================================================== */
+
+/* ---------- Variables de color ---------- */
+:root {
+    --grafito: #1F2328;
+    --naranja: #F26B1D;
+    --naranja-oscuro: #D45A12;
+    --fondo: #F5F6F8;
+    --blanco: #FFFFFF;
+    --gris-borde: #D0D4DA;
+    --gris-texto: #5F6670;
+}
+
+/* ---------- Base ---------- */
+* {
+    box-sizing: border-box; /* el padding no suma al ancho: evita que los inputs se salgan */
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    color: var(--grafito);
+    background-color: var(--fondo);
+
+    /* La página ocupa toda la altura y el footer se queda abajo */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- Cabecera ---------- */
+header {
+    background-color: var(--grafito);
+    padding: 16px 20px;
+}
+
+header a {
+    color: var(--blanco);
+    font-size: 22px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* ---------- Contenido ---------- */
+main {
+    flex: 1; /* ocupa el espacio libre entre header y footer */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 16px;
+}
+
+/* Tarjeta blanca: crece hasta 440px y en pantallas pequeñas ocupa el 100% */
+section {
+    width: 100%;
+    max-width: 440px;
+    background-color: var(--blanco);
+    border-radius: 8px;
+    padding: 32px 28px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+    margin: 0 0 20px;
+    font-size: 26px;
+}
+
+section > p {
+    color: var(--gris-texto);
+}
+
+/* ---------- Formulario ---------- */
+fieldset {
+    border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+    padding: 12px 16px 4px;
+    margin: 0 0 20px;
+}
+
+legend {
+    padding: 0 6px;
+    font-weight: bold;
+    color: var(--gris-texto);
+}
+
+/* Cada grupo etiqueta + campo */
+form div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+label {
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px; /* 16px evita que el móvil haga zoom al escribir */
+    border: 1px solid var(--gris-borde);
+    border-radius: 6px;
+    background-color: var(--blanco);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--naranja);
+    box-shadow: 0 0 0 3px rgba(242, 107, 29, 0.2);
+}
+
+small {
+    margin-top: 4px;
+    color: var(--gris-texto);
+    font-size: 13px;
+}
+
+/* ---------- Mensaje de error / éxito (el color lo pone el JS) ---------- */
+#mensaje {
+    min-height: 20px; /* reserva el hueco para que el formulario no "salte" al aparecer */
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ---------- Botón ---------- */
+button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--blanco);
+    background-color: var(--naranja);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--naranja-oscuro);
+}
+
+button:disabled {
+    background-color: var(--gris-borde);
+    cursor: not-allowed;
+}
+
+/* ---------- Enlaces ---------- */
+section a {
+    color: var(--naranja);
+    font-weight: bold;
+}
+
+/* ---------- Pie ---------- */
+footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 14px;
+    color: var(--gris-texto);
+}
+
+footer p {
+    margin: 0;
+}
