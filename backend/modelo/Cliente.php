@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/BD.php";
+require_once __DIR__ . "/conexion.php";
 class Cliente {
     private $id_cliente;
     private $id_usuario;
@@ -25,69 +25,6 @@ class Cliente {
         $this->email         = $email;
         $this->direccion     = $direccion;
         $this->poblacion     = $poblacion;
-        $this->codigo_postal = $codigo_postal;
-    }
-    //Getters
-    public function getIdCliente(){
-        return $this->id_cliente;
-    }
-    public function getIdUsuario(){
-        return $this->id_usuario;
-    }
-    public function getDni(){
-        return $this->dni;
-    }
-    public function getNombre(){
-        return $this->nombre;
-    }
-    public function getApellidos(){
-        return $this->apellidos;
-    }
-    public function getTelefono(){
-        return $this->telefono;
-    }
-    public function getEmail(){
-        return $this->email;
-    }
-    public function getDireccion(){
-        return $this->direccion;
-    }
-    public function getPoblacion(){
-        return $this->poblacion;
-    }
-    public function getCodigoPostal(){
-        return $this->codigo_postal;
-    }
-
-    //Setters
-    public function setIdCliente($id_cliente){
-        $this->id_cliente = $id_cliente;
-    }
-    public function setIdUsuario($id_usuario){
-        $this->id_usuario = $id_usuario;
-    }
-    public function setDni($dni){
-        $this->dni = $dni;
-    }
-    public function setNombre($nombre){
-        $this->nombre = $nombre;
-    }
-    public function setApellidos($apellidos){
-        $this->apellidos = $apellidos;
-    }
-    public function setTelefono($telefono){
-        $this->telefono = $telefono;
-    }
-    public function setEmail($email){
-        $this->email = $email;
-    }
-    public function setDireccion($direccion){
-        $this->direccion = $direccion;
-    }
-    public function setPoblacion($poblacion){
-        $this->poblacion = $poblacion;
-    }
-    public function setCodigoPostal($codigo_postal){
         $this->codigo_postal = $codigo_postal;
     }
 
@@ -118,7 +55,7 @@ class Cliente {
     }
 
     // Devuelve el cliente por su id
-    public function getCliente() {
+    public function obtenerCliente() {
         try {
             $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT * FROM cliente WHERE id_cliente = :id_cliente";
