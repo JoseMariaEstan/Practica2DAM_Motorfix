@@ -1,52 +1,36 @@
-/* =====================================================================
-   MotorFix - Estilos básicos (login y registro)
-   Responsive sin media queries: anchos máximos, porcentajes y flexbox
-   ===================================================================== */
-
-/* ---------- Variables de color ---------- */
-:root {
-    --grafito: #1F2328;
-    --naranja: #F26B1D;
-    --naranja-oscuro: #D45A12;
-    --fondo: #F5F6F8;
-    --blanco: #FFFFFF;
-    --gris-borde: #D0D4DA;
-    --gris-texto: #5F6670;
-}
-
-/* ---------- Base ---------- */
 * {
     box-sizing: border-box; /* el padding no suma al ancho: evita que los inputs se salgan */
 }
-
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
-    color: var(--grafito);
-    background-color: var(--fondo);
-
+    color: #1F2328;
+    background-color: #F5F6F8;
     /* La página ocupa toda la altura y el footer se queda abajo */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center; /* centra la tarjeta cuando la section va directa en el body */
 }
-
+/*Login y registro*/
 /* ---------- Cabecera ---------- */
 header {
-    background-color: var(--grafito);
+    width: 100%;
+    background-color: #1F2328;
     padding: 16px 20px;
 }
 
 header a {
-    color: var(--blanco);
+    color: #FFFFFF;
     font-size: 22px;
     font-weight: bold;
     text-decoration: none;
 }
 
-/* ---------- Contenido ---------- */
+/* ---------- Contenido (login: la section va dentro de main) ---------- */
 main {
+    width: 100%;
     flex: 1; /* ocupa el espacio libre entre header y footer */
     display: flex;
     justify-content: center;
@@ -58,10 +42,16 @@ main {
 section {
     width: 100%;
     max-width: 440px;
-    background-color: var(--blanco);
+    background-color: #FFFFFF;
     border-radius: 8px;
     padding: 32px 28px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Registro: la section va directa en el body, sin main que le dé margen */
+body > section {
+    width: calc(100% - 32px);
+    margin: 40px 0;
 }
 
 h1 {
@@ -69,13 +59,21 @@ h1 {
     font-size: 26px;
 }
 
+/* Subtítulo del registro: sin la negrita que trae el h4 por defecto */
+h4 {
+    margin: -12px 0 24px;
+    font-size: 16px;
+    font-weight: normal;
+    color: #5F6670;
+}
+
 section > p {
-    color: var(--gris-texto);
+    color: #5F6670;
 }
 
 /* ---------- Formulario ---------- */
 fieldset {
-    border: 1px solid var(--gris-borde);
+    border: 1px solid #D0D4DA;
     border-radius: 8px;
     padding: 12px 16px 4px;
     margin: 0 0 20px;
@@ -84,7 +82,7 @@ fieldset {
 legend {
     padding: 0 6px;
     font-weight: bold;
-    color: var(--gris-texto);
+    color: #5F6670;
 }
 
 /* Cada grupo etiqueta + campo */
@@ -104,24 +102,24 @@ input {
     width: 100%;
     padding: 10px 12px;
     font-size: 16px; /* 16px evita que el móvil haga zoom al escribir */
-    border: 1px solid var(--gris-borde);
+    border: 1px solid #D0D4DA;
     border-radius: 6px;
-    background-color: var(--blanco);
+    background-color: #FFFFFF;
 }
 
 input:focus {
     outline: none;
-    border-color: var(--naranja);
+    border-color: #F26B1D;
     box-shadow: 0 0 0 3px rgba(242, 107, 29, 0.2);
 }
 
 small {
     margin-top: 4px;
-    color: var(--gris-texto);
+    color: #5F6670;
     font-size: 13px;
 }
 
-/* ---------- Mensaje de error / éxito (el color lo pone el JS) ---------- */
+/* ---------- Mensaje de error / éxito ---------- */
 #mensaje {
     min-height: 20px; /* reserva el hueco para que el formulario no "salte" al aparecer */
     margin: 0 0 12px;
@@ -135,36 +133,303 @@ button {
     padding: 12px;
     font-size: 16px;
     font-weight: bold;
-    color: var(--blanco);
-    background-color: var(--naranja);
+    color: #FFFFFF;
+    background-color: #F26B1D;
     border: none;
     border-radius: 6px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: var(--naranja-oscuro);
+    background-color: #D45A12;
 }
 
-button:disabled {
-    background-color: var(--gris-borde);
-    cursor: not-allowed;
+/* ---------- "¿Ya tienes cuenta?" (último div de la tarjeta del registro) ---------- */
+section > div:last-child {
+    margin-top: 20px;
+    color: #5F6670;
 }
 
 /* ---------- Enlaces ---------- */
 section a {
-    color: var(--naranja);
+    color: #F26B1D;
     font-weight: bold;
 }
 
 /* ---------- Pie ---------- */
 footer {
+    margin-top: auto; /* empuja el footer al final de la página */
     text-align: center;
     padding: 16px;
     font-size: 14px;
-    color: var(--gris-texto);
+    color: #5F6670;
 }
 
-footer p {
+footer p,
+footer div {
     margin: 0;
+}
+
+
+/* =====================================================================
+   ÁREA DE CLIENTE (cliente.html)
+   Todo va dentro de .areaCliente (clase del <body> de cliente.html)
+   para que las reglas del login de arriba no afecten a esta pantalla
+   ===================================================================== */
+
+/* ---------- Anular las reglas del login en esta página ---------- */
+body.areaCliente {
+    display: block;
+}
+
+.areaCliente section {
+    max-width: none;
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+}
+
+.areaCliente button {
+    width: auto;
+    padding: 0;
+    font-size: 15px;
+    font-weight: normal;
+    color: inherit;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.areaCliente h1 {
+    margin: 0 0 8px;
+}
+
+.areaCliente h2 {
+    margin: 0 0 12px;
+    font-size: 18px;
+}
+
+.areaCliente p {
+    margin: 0 0 8px;
+}
+
+/* Textos en gris */
+.areaCliente .textoGris,
+.areaCliente .saludo p,
+.areaCliente .avisoCita p {
+    color: #5F6670;
+}
+
+.areaCliente .textoGris {
+    font-size: 14px;
+}
+
+/* ---------- Estructura: menú lateral + zona principal ---------- */
+/* flex-wrap: si no caben juntos (pantalla menor de 860px = 220 + 640),
+   el menú se coloca arriba ocupando todo el ancho */
+.areaCliente .contenedor {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100vh;
+}
+
+.areaCliente .menuLateral {
+    flex: 1 0 220px;
+    background-color: #1F2328;
+    padding: 20px 16px;
+}
+
+.areaCliente .zonaPrincipal {
+    flex: 999 1 640px;
+    min-width: 0; /* evita que el contenido largo ensanche la página */
+    display: block;
+    padding: 0;
+}
+
+/* ---------- Menú lateral ---------- */
+.areaCliente .cajaLogo {
+    margin-bottom: 24px;
+}
+
+.areaCliente .logo {
+    margin: 0;
+    color: #FFFFFF;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* Las opciones se colocan en filas: en el menú lateral cabe una por fila
+   y en el móvil se ponen varias por fila */
+.areaCliente .menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.areaCliente .tituloMenu {
+    flex-basis: 100%; /* el título del menú ocupa su propia fila */
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #9AA1AB;
+    letter-spacing: 1px;
+}
+
+.areaCliente .item_nav {
+    flex: 1 1 140px; /* cada opción mide al menos 140px y crece para llenar la fila */
+    padding: 10px 12px;
+    text-align: left;
+    color: #D0D4DA;
+    border-radius: 6px;
+}
+
+.areaCliente .item_nav:hover {
+    background-color: #2D333B;
+    color: #FFFFFF;
+}
+
+/* Opción del menú en la que estamos */
+.areaCliente .item_nav.seleccionado {
+    background-color: #F26B1D;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+/* ---------- Barra superior ---------- */
+.areaCliente .barraSuperior {
+    display: flex;
+    flex-wrap: wrap; /* en el móvil el bloque del usuario baja debajo del título */
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #D0D4DA;
+}
+
+.areaCliente .tituloPagina {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.areaCliente .datosSesion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.areaCliente .nombreUsuario {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Etiqueta de estado (Cliente, Confirmada...) */
+.areaCliente .etiqueta {
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #D45A12;
+    background-color: #FDEBDD;
+    border-radius: 12px;
+}
+
+/* ---------- Contenido ---------- */
+.areaCliente .contenido {
+    max-width: 1100px;
+    padding: 32px 24px;
+}
+
+.areaCliente .saludo {
+    margin-bottom: 24px;
+}
+
+/* Grid con auto-fit: tantas columnas de al menos 180px como quepan
+   (3 en el ordenador, 2 en tablet, 1 en el móvil), todas del mismo ancho */
+.areaCliente .resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* Tarjetas blancas: las del resumen y el aviso de "Pedir cita" */
+.areaCliente .tarjeta,
+.areaCliente .avisoCita {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.areaCliente .tarjeta .etiqueta {
+    margin-bottom: 12px;
+}
+
+.areaCliente .fechaCita {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.areaCliente .numeroGrande,
+.areaCliente .totalFactura {
+    margin-bottom: 4px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #F26B1D;
+}
+
+/* Aviso de "Pedir cita" con borde naranja a la izquierda */
+.areaCliente .avisoCita {
+    border-left: 4px solid #F26B1D;
+    border-radius: 0 8px 8px 0;
+}
+
+.areaCliente .avisoCita p {
+    margin-bottom: 16px;
+}
+
+/* ---------- Botones ---------- */
+/* Botón que parece un enlace (se queda abajo en cada tarjeta) */
+.areaCliente .enlaceTarjeta {
+    margin-top: auto;
+    padding-top: 12px;
+    font-weight: bold;
+    color: #F26B1D;
+    text-decoration: underline;
+}
+
+.areaCliente .botonNaranja,
+.areaCliente .botonBlanco {
+    padding: 10px 18px;
+    font-weight: bold;
+    border-radius: 6px;
+}
+
+/* Botón principal naranja (igual que en el login) */
+.areaCliente .botonNaranja {
+    color: #FFFFFF;
+    background-color: #F26B1D;
+}
+
+/* Botón secundario con borde gris */
+.areaCliente .botonBlanco {
+    background-color: #FFFFFF;
+    border: 1px solid #D0D4DA;
+}
+
+.areaCliente .botonNaranja:hover {
+    background-color: #D45A12;
+}
+
+.areaCliente .botonBlanco:hover {
+    border-color: #F26B1D;
+    color: #F26B1D;
+}
+
+.areaCliente .enlaceTarjeta:hover {
+    color: #D45A12;
 }

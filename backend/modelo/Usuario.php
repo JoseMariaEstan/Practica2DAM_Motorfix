@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/BD.php";
+require_once __DIR__ . "/conexion.php";
 class Usuario {
     private $id_usuario;
     private $email;
@@ -21,50 +21,11 @@ class Usuario {
         $this->activo     = $activo;
     }
 
-    //Getters
+    //Lo usa el registro para enlazar la ficha de cliente con el usuario recien creado
     public function getIdUsuario(){
         return $this->id_usuario;
     }
-    public function getEmail(){
-        return $this->email;
-    }
-    public function getNombre(){
-        return $this->nombre;
-    }
-    public function getApellidos(){
-        return $this->apellidos;
-    }
-    public function getRol(){
-        return $this->rol;
-    }
-    public function getActivo(){
-        return $this->activo;
-    }
 
-//Settters
-    public function setIdUsuario($id_usuario){
-        $this->id_usuario = $id_usuario;
-    }
-    public function setEmail($email){
-        $this->email = $email;
-    }
-    public function setPassword($password){
-        $this->password = $password;
-    }
-    public function setNombre($nombre){
-        $this->nombre = $nombre;
-    }
-    public function setApellidos($apellidos){
-        $this->apellidos = $apellidos;
-    }
-    public function setRol($rol){
-        $this->rol = $rol;
-    }
-    public function setActivo($activo){
-        $this->activo = $activo;
-    }
-
-    // Inserta el usuario. La contraseña se guarda cifrada con BCrypt
     public function insertUsuario() {
         try {
             $conexion = BD::getInstance()->getConexion();
@@ -105,7 +66,7 @@ class Usuario {
     }
 
     // Busca un usuario activo por email (se usa en el login). Incluye la contraseña cifrada
-    public function getByEmail() {
+    public function obtenerPorEmail() {
         try {
             $conexion = BD::getInstance()->getConexion();
             $sql = "SELECT id_usuario, email, password, nombre, apellidos, rol
@@ -124,7 +85,7 @@ class Usuario {
         return password_verify($passwordEscrita, $hashGuardado);
     }
 
-    // Actualiza los datos del usuario (NO la contraseña,eso va en updatePassword)
+    // Actualiza los datos del usuario (NO la contraseña, eso va en updateContra)
     public function updateUsuario() {
         try {
             $conexion = BD::getInstance()->getConexion();
