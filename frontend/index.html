@@ -1,43 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-    <title>PROMESA</title>
+    <title>MotorFix</title>
     <link rel="stylesheet" href="index.css">
     <script src="index.js" defer ></script> 
         <!--defer -> para que se ejecute después de que se cargue completamente el HTML-->   
-</head>
-<body>
-    <h1>Alumno:</h1>    
-    <form>
-        <div>
-            <label for="dni" placeholder="Dni:">Dni:</label>
-            <input type="text" name="dni" id="dni" >
-        </div>
-        <div>
-            <label for="nombre" placeholder="Nombre:">Nombre:</label>
-            <input type="text" name="nombre" id="nombre" > 
-        </div>
-        <div>
-            <label for="apellido_1" placeholder="Apellido:">Apellido 1:</label>
-            <input type="text" name="apellido_1" id="apellido_1"> 
-        </div>
-        <div>
-            <label for="localidad" placeholder="Localidad:">Localidad:</label>
-            <input type="text" name="localidad" id="localidad" > 
-        </div>
-
-        <input type="button" value="Obtener" id="obtener">
-        <input type="button" value="Insertar" id="insertar">
-        <input type="button" value="Actualizar" id="actualizar">
-        <input type="button" value="Borrar" id="borrar">
-        
-    </form>
-=======
-    <title>Iniciar sesión - MotorFix</title>
-    <link rel="stylesheet" href=".../frontend/index.css">
 </head>
 <body>
     <header>
@@ -45,8 +14,6 @@
     </header>
         <section>
             <h1>Iniciar sesión</h1>
-
-            <!-- El formulario no se envía solo: el botón es type="button" y lo gestiona login.js con fetch() -->
             <form id="formLogin" >
                 <div>
                     <label for="email">Email</label>
@@ -57,9 +24,8 @@
                     <label for="password">Contraseña</label>
                     <input type="password" id="password" name="password" required>
                 </div>
-
                 <!-- Aquí se mostrarán los mensajes de error o de éxito desde JS -->
-                <p id="mensaje" role="alert"></p>
+                <p id="mensaje"></p>
 
                 <button type="button" id="entrar">Entrar</button>
             </form>
@@ -69,8 +35,5 @@
     <footer>
         <p>MotorFix - Taller mecánico</p>
     </footer>
-
-    <script src="../js/login.js"></script>
->>>>>>> Usuario
 </body>
 </html>

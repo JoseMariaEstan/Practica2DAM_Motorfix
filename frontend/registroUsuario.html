@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear cuenta - MotorFix</title>
-    <link rel="stylesheet" href=".../frontend/index.css">
+    <link rel="stylesheet" href="index.css">
+    <script src="index.js" defer></script>
+        <!--defer -> para que se ejecute después de que se cargue completamente el HTML-->
 </head>
     <body>
         <header>
@@ -55,9 +57,12 @@
                         <input type="password" id="password2" name="password2" minlength="8" required>
                     </div>
                 </fieldset>
+                <!-- Aquí se mostrarán los mensajes de error o de éxito desde JS -->
+                <p id="mensaje"></p>
+
                 <button type="button" id="registrar">Crear cuenta</button>
             </form>
-            <div>¿Ya tienes cuenta? <a href="index.html">Iniciar sesión</a></div>
+            <div class="tieneCuenta">¿Ya tienes cuenta? <a href="index.html">Iniciar sesión</a></div>
         </section>
 
         <footer>

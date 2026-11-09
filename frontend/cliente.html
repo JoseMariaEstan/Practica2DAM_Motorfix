@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotorFix - Área de cliente</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="index.js" defer></script>
+        <!--defer -> para que se ejecute después de que se cargue completamente el HTML-->
+</head>
+<body class="areaCliente">
+    <div class="contenedor">
+        <!-- Menú lateral -->
+        <aside class="menuLateral">
+            <div class="cajaLogo">
+                <p class="logo">MotorFix</p>
+            </div>
+            <nav class="menu">
+                <p class="tituloMenu">ÁREA DE CLIENTE</p>
+                <button class="item_nav seleccionado">Resumen</button>
+                <button class="item_nav">Mis vehículos</button>
+                <button class="item_nav">Pedir cita</button>
+                <button class="item_nav">Mis citas</button>
+                <button class="item_nav">Mis facturas</button>
+            </nav>
+        </aside>
+
+        <main class="zonaPrincipal">
+            <!-- Barra superior -->
+            <header class="barraSuperior">
+                <p class="tituloPagina">Resumen</p>
+                <div class="datosSesion">
+                    <p class="nombreUsuario">Ana García</p>
+                    <span class="etiqueta">Cliente</span>
+                    <button class="botonBlanco" id="cerrarSesion">Cerrar sesión</button>
+                </div>
+            </header>
+
+            <div class="contenido">
+                <section class="saludo">
+                    <h1>Hola, Ana</h1>
+                    <p>Consulta el estado de tu vehículo y tus próximas visitas al taller.</p>
+                </section>
+
+                <!-- Tarjetas de resumen -->
+                <section class="resumen">
+                    <article class="tarjeta">
+                        <h2>Próxima cita</h2>
+                        <p class="fechaCita">30 oct. 2026 · 09:00</p>
+                        <span class="etiqueta">Confirmada</span>
+                        <p>1234 LBC · SEAT León</p>
+                        <p class="textoGris">Revisión anual</p>
+                        <button class="enlaceTarjeta">Ver mis citas</button>
+                    </article>
+
+                    <article class="tarjeta">
+                        <h2>Mis vehículos</h2>
+                        <p class="numeroGrande">2</p>
+                        <p>Vehículos registrados</p>
+                        <p class="textoGris">SEAT León y Renault Clio</p>
+                        <button class="enlaceTarjeta">Ver mis vehículos</button>
+                    </article>
+
+                    <article class="tarjeta">
+                        <h2>Última factura</h2>
+                        <p class="totalFactura">290,40 €</p>
+                        <p>F-2026-0148 · 15 oct. 2026</p>
+                        <p class="textoGris">5678 KLM · Renault Clio</p>
+                        <button class="enlaceTarjeta">Ver detalle de factura</button>
+                    </article>
+                </section>
+
+                <section class="avisoCita">
+                    <h2>¿Necesitas traer tu vehículo?</h2>
+                    <p>Elige el vehículo, la fecha y el motivo de tu visita.</p>
+                    <button class="botonNaranja" id="pedirCita">Pedir cita</button>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
