@@ -25,8 +25,9 @@ class Factura {
         $this->iva_porcentaje    = $iva_porcentaje;
     }
 
+
+    //Pendiente de revision por ver si en vez de calcular los datos en la sql se calculan en el sw
     // Suma las horas y los repuestos de la cita y calcula subtotal, IVA y total.
-    // Se llama antes de insertFactura, los importes no los escribe nadie a mano
     public function calcularTotales() {
         try {
             $conexion = BD::getInstance()->getConexion();
@@ -45,7 +46,7 @@ class Factura {
             //si la cita no tiene repuestos, SUM devuelve null y con ?? 0 lo dejamos en 0
             $this->total_repuestos = $stmt->fetchAll(PDO::FETCH_ASSOC)[0]["total"] ?? 0;
 
-            //round(..., 2) para que queden con dos decimales, como en una factura real
+            //round para mantener los resultados con dos decimales
             $this->subtotal    = round($this->total_mano_obra + $this->total_repuestos, 2);
             $this->iva_importe = round($this->subtotal * $this->iva_porcentaje / 100, 2);
             $this->total       = round($this->subtotal + $this->iva_importe, 2);
