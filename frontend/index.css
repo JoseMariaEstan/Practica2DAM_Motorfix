@@ -274,9 +274,12 @@ body.areaCliente {
     letter-spacing: 1px;
 }
 
+/* Las opciones del menu son enlaces <a> a cada pagina del area de cliente */
 .areaCliente .item_nav {
     flex: 1 1 140px; /* cada opción mide al menos 140px y crece para llenar la fila */
     padding: 10px 12px;
+    font-size: 15px;
+    text-decoration: none; /* quita el subrayado que traen los enlaces */
     text-align: left;
     color: #D0D4DA;
     border-radius: 6px;
@@ -396,6 +399,7 @@ body.areaCliente {
 /* Botón que parece un enlace (se queda abajo en cada tarjeta) */
 .areaCliente .enlaceTarjeta {
     margin-top: auto;
+    font-size: 15px;
     padding-top: 12px;
     font-weight: bold;
     color: #F26B1D;
@@ -405,6 +409,8 @@ body.areaCliente {
 .areaCliente .botonNaranja,
 .areaCliente .botonBlanco {
     padding: 10px 18px;
+    font-size: 15px;
+    text-decoration: none; /* por si el boton es un enlace <a> */
     font-weight: bold;
     border-radius: 6px;
 }

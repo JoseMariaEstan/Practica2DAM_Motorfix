@@ -166,7 +166,11 @@ function comprobarSesion() {
             const usuarioLogueado = data.data[0];
             //Se pone el nombre de quien ha entrado en lugar del de ejemplo
             document.getElementById("nombreUsuario").textContent = usuarioLogueado.nombre;
-            document.getElementById("saludo").textContent = "Hola, " + usuarioLogueado.nombre;
+            //El saludo "Hola, ..." solo esta en el Resumen (cliente.html)
+            const saludo = document.getElementById("saludo");
+            if (saludo) {
+                saludo.textContent = "Hola, " + usuarioLogueado.nombre;
+            }
         } else {
             window.location.href = "index.html";
         }
