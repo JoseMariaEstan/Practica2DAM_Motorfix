@@ -28,6 +28,11 @@ class Cliente {
         $this->codigo_postal = $codigo_postal;
     }
 
+    //Lo usa el registro para guardar en la sesion el id del cliente recien creado
+    public function getIdCliente(){
+        return $this->id_cliente;
+    }
+
     public function insertCliente() {
         try {
             $conexion = BD::getInstance()->getConexion();

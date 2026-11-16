@@ -1,6 +1,13 @@
 <?php 
 require_once __DIR__ . "/Usuario.php";
 require_once __DIR__ . "/Cliente.php";
+require_once __DIR__ . "/Vehiculo.php";
+require_once __DIR__ . "/Cita.php";
+
+//Arranca la sesion. PHP guarda los datos en el servidor y le da al navegador
+//una cookie (PHPSESSID) para reconocerlo en las siguientes peticiones
+session_start();
+
 //Indicar que es una respuesta JSON, es decir, para que la web reconozca el archivo
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -39,6 +46,18 @@ switch ($request["action"]) {
         } else {
             $usuario = $resultado[0];
             unset($usuario["password"]); //la contraseña no se devuelve nunca
+
+            //Guardamos en la sesion quien ha entrado y con que rol
+            $_SESSION["id_usuario"] = $usuario["id_usuario"];
+            $_SESSION["nombre"] = $usuario["nombre"];
+            $_SESSION["rol"] = $usuario["rol"];
+
+            //Si es cliente guardamos tambien su id_cliente, que es el que usan sus vehiculos y citas
+            if ($usuario["rol"] == "cliente") {
+                $clienteA = new Cliente(null, $usuario["id_usuario"]);
+                $_SESSION["id_cliente"] = $clienteA->obtenerPorUsuario()[0]["id_cliente"];
+            }
+
             $data = [$usuario];
             $msg = "Bienvenido, " . $usuario["nombre"];
         }
@@ -62,54 +81,4 @@ switch ($request["action"]) {
         }
         if ($usuario["password"] != $usuario["password2"]) {
             $success = false;
-            $msg = "Las contraseñas no coinciden";
-            break;
-        }
-
-        //El email no puede estar ya registrado
-        $usuarioA = new Usuario(null, $usuario["email"]);
-        if (!empty($usuarioA->obtenerPorEmail())) {
-            $success = false;
-            $msg = "Ya existe una cuenta con ese email";
-            break;
-        }
-
-        //1. Se crea el usuario (datos de acceso). La contraseña la cifra insertUsuario
-        $usuarioA = new Usuario(null, $usuario["email"], $usuario["password"], $usuario["nombre"], $usuario["apellidos"], "cliente", 1);
-        $success = $usuarioA->insertUsuario();
-        if (!$success) {
-            $msg = "No se pudo crear el usuario";
-            break;
-        }
-
-        //2. Se crea su ficha de cliente con el id del usuario que se acaba de crear
-        $clienteA = new Cliente(null, $usuarioA->getIdUsuario(), $usuario["dni"], $usuario["nombre"], $usuario["apellidos"], $usuario["telefono"], $usuario["email"]);
-        $success = $clienteA->insertCliente();
-        if (!$success) {
-            //Si falla el cliente borramos el usuario, para que no quede un usuario sin ficha
-            $usuarioA->deleteUsuario();
-            $msg = "No se pudo crear el cliente (puede que el DNI ya esté registrado)";
-            break;
-        }
-
-        $data = [[
-            "id_usuario" => $usuarioA->getIdUsuario(),
-            "nombre" => $usuario["nombre"],
-            "email" => $usuario["email"]
-        ]];
-        $msg = "Cuenta creada correctamente";
-        break;
-
-    default:
-        $success = false;
-        $msg = "Accion no reconocida";
-        break;
-}
-
-$arrSalida = [
-    "data" => $data,
-    "success" => $success,
-    "msg" => $msg
-];
-
-echo json_encode($arrSalida);
+            $msg = "Las contraseñas no

@@ -19,6 +19,19 @@ if (buttonRegistrar) {
     });
 }
 
+const buttonCerrarSesion = document.getElementById("cerrarSesion");
+if (buttonCerrarSesion) {
+    buttonCerrarSesion.addEventListener("click", (event) => {
+        cerrarSesion();
+    });
+}
+
+//Si estamos en el area de cliente (tiene el boton de cerrar sesion),
+//nada mas cargar se comprueba que hay una sesion iniciada
+if (buttonCerrarSesion) {
+    comprobarSesion();
+}
+
 //Funciones de los botones
 //Login
 function loginUsuario() {
@@ -131,6 +144,63 @@ function registrarUsuario() {
     });
 }
 
+//Comprobar sesion
+//Se pregunta al servidor quien ha iniciado sesion. Si no hay nadie, se vuelve al login
+function comprobarSesion() {
+    let request = {};
+    request.action = "sesion";
+    request.data = [];
+
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+
+        if (data.success) {
+            const usuarioLogueado = data.data[0];
+            //Se pone el nombre de quien ha entrado en lugar del de ejemplo
+            document.getElementById("nombreUsuario").textContent = usuarioLogueado.nombre;
+            document.getElementById("saludo").textContent = "Hola, " + usuarioLogueado.nombre;
+        } else {
+            window.location.href = "index.html";
+        }
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
+//Cerrar sesion
+function cerrarSesion() {
+    console.log("Pulsado botón cerrar sesión");
+
+    let request = {};
+    request.action = "logout";
+    request.data = [];
+
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        window.location.href = "index.html";
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
 /* Respuesta
 {
     data: [{}, {}],
@@ -141,7 +211,7 @@ function registrarUsuario() {
 
 // Envío
 {
-    action: login/registro/insert/delete/update/get,
+    action: login/registro/sesion/logout/pedirCita/misCitas,
     data: [{}],
     filters: {},
     page: ,
