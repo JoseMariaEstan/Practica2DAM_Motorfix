@@ -439,3 +439,77 @@ body.areaCliente {
 .areaCliente .enlaceTarjeta:hover {
     color: #D45A12;
 }
+/* =====================================================================
+   MIS VEHÍCULOS (vehiculos.html)
+   ===================================================================== */
+
+/* La tabla arriba y el formulario debajo, separados */
+.areaCliente .bloqueVehiculos {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* La tabla y el formulario ocupan todo el ancho de la tarjeta */
+.areaCliente .cajaTabla,
+.areaCliente .bloqueVehiculos form {
+    width: 100%;
+}
+
+/* Si la tabla no cabe (móvil), se hace scroll solo dentro de la tarjeta */
+.areaCliente .cajaTabla {
+    overflow-x: auto;
+}
+
+.areaCliente .tablaVehiculos {
+    width: 100%;
+    border-collapse: collapse; /* une los bordes de las celdas en una sola línea */
+}
+
+.areaCliente .tablaVehiculos th,
+.areaCliente .tablaVehiculos td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #D0D4DA;
+    white-space: nowrap; /* que la matrícula o el modelo no se partan en dos líneas */
+}
+
+.areaCliente .tablaVehiculos th {
+    font-size: 14px;
+    color: #5F6670;
+}
+
+/* Grid con auto-fit: los campos se ponen en 3, 2 o 1 columna según el ancho */
+.areaCliente .bloqueVehiculos form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0 16px;
+}
+
+/* El selector de vehículo, el mensaje y los botones ocupan toda la fila */
+.areaCliente .filaCompleta {
+    grid-column: 1 / -1;
+}
+
+/* Los desplegables con el mismo aspecto que los input */
+.areaCliente select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid #D0D4DA;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+}
+
+.areaCliente select:focus {
+    outline: none;
+    border-color: #F26B1D;
+    box-shadow: 0 0 0 3px rgba(242, 107, 29, 0.2);
+}
+
+/* Los botones en fila (el "form div" de arriba los pondría en columna) */
+.areaCliente form .botonesFormulario {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+}

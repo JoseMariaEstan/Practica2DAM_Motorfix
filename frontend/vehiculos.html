@@ -42,7 +42,86 @@
                     <p>Consulta, añade y modifica los vehículos que tienes registrados en el taller.</p>
                 </section>
 
-                <!-- Aquí irá la tabla de vehículos y el formulario para añadir (MF-21) -->
+                <section class="bloqueVehiculos">
+                    <!-- Tabla con los vehículos del cliente (se rellena desde index.js) -->
+                    <article class="tarjeta">
+                        <h2>Vehículos registrados</h2>
+                        <div class="cajaTabla">
+                            <table class="tablaVehiculos">
+                                <thead>
+                                    <tr>
+                                        <th>Matrícula</th>
+                                        <th>Marca</th>
+                                        <th>Modelo</th>
+                                        <th>Año</th>
+                                        <th>Color</th>
+                                        <th>Kilómetros</th>
+                                        <th>Combustible</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaVehiculos">
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <!-- Formulario para añadir, modificar o borrar un vehículo -->
+                    <article class="tarjeta">
+                        <h2>Añadir o modificar un vehículo</h2>
+                        <form>
+                            <div class="filaCompleta">
+                                <label for="vehiculoElegido">Vehículo</label>
+                                <select id="vehiculoElegido">
+                                    <option value="">Nuevo vehículo</option>
+                                </select>
+                                <small>Elige uno de tus vehículos para modificarlo o borrarlo</small>
+                            </div>
+                            <div>
+                                <label for="matricula">Matrícula</label>
+                                <input type="text" id="matricula" placeholder="1234ABC">
+                            </div>
+                            <div>
+                                <label for="marca">Marca</label>
+                                <input type="text" id="marca" placeholder="Seat">
+                            </div>
+                            <div>
+                                <label for="modelo">Modelo</label>
+                                <input type="text" id="modelo" placeholder="León">
+                            </div>
+                            <div>
+                                <label for="anio">Año</label>
+                                <input type="number" id="anio" placeholder="2018">
+                            </div>
+                            <div>
+                                <label for="color">Color</label>
+                                <input type="text" id="color" placeholder="Blanco">
+                            </div>
+                            <div>
+                                <label for="kilometros">Kilómetros</label>
+                                <input type="number" id="kilometros" placeholder="85000">
+                            </div>
+                            <div>
+                                <label for="combustible">Combustible</label>
+                                <select id="combustible">
+                                    <option value="">Sin indicar</option>
+                                    <option value="gasolina">Gasolina</option>
+                                    <option value="diesel">Diésel</option>
+                                    <option value="hibrido">Híbrido</option>
+                                    <option value="electrico">Eléctrico</option>
+                                    <option value="glp">GLP</option>
+                                </select>
+                            </div>
+
+                            <p id="mensaje" class="filaCompleta"></p>
+
+                            <div class="filaCompleta botonesFormulario">
+                                <button type="button" class="botonNaranja" id="insertarVehiculo">Añadir vehículo</button>
+                                <button type="button" class="botonBlanco" id="actualizarVehiculo">Guardar cambios</button>
+                                <button type="button" class="botonBlanco" id="borrarVehiculo">Borrar vehículo</button>
+                            </div>
+                        </form>
+                    </article>
+                </section>
             </div>
         </main>
     </div>
