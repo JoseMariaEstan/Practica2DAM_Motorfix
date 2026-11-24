@@ -443,8 +443,9 @@ body.areaCliente {
    MIS VEHÍCULOS (vehiculos.html)
    ===================================================================== */
 
-/* La tabla arriba y el formulario debajo, separados */
-.areaCliente .bloqueVehiculos {
+/* La tabla arriba y el formulario debajo, separados (Mis vehículos y Mis citas) */
+.areaCliente .bloqueVehiculos,
+.areaCliente .bloqueTablas {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -461,20 +462,24 @@ body.areaCliente {
     overflow-x: auto;
 }
 
-.areaCliente .tablaVehiculos {
+.areaCliente .tablaVehiculos,
+.areaCliente .tablaDatos {
     width: 100%;
     border-collapse: collapse; /* une los bordes de las celdas en una sola línea */
 }
 
 .areaCliente .tablaVehiculos th,
-.areaCliente .tablaVehiculos td {
+.areaCliente .tablaVehiculos td,
+.areaCliente .tablaDatos th,
+.areaCliente .tablaDatos td {
     padding: 10px 12px;
     text-align: left;
     border-bottom: 1px solid #D0D4DA;
     white-space: nowrap; /* que la matrícula o el modelo no se partan en dos líneas */
 }
 
-.areaCliente .tablaVehiculos th {
+.areaCliente .tablaVehiculos th,
+.areaCliente .tablaDatos th {
     font-size: 14px;
     color: #5F6670;
 }
@@ -512,4 +517,52 @@ body.areaCliente {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+
+/* =====================================================================
+   PEDIR CITA (Pedircita.html)
+   ===================================================================== */
+
+/* El formulario no necesita todo el ancho: como mucho 600px */
+.areaCliente .bloqueCita {
+    max-width: 600px;
+}
+
+.areaCliente .bloqueCita form {
+    width: 100%;
+}
+
+/* La caja del motivo con el mismo aspecto que los input */
+.areaCliente textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif; /* el textarea no hereda la fuente del body */
+    border: 1px solid #D0D4DA;
+    border-radius: 6px;
+    resize: vertical; /* solo se puede estirar hacia abajo */
+}
+
+.areaCliente textarea:focus {
+    outline: none;
+    border-color: #F26B1D;
+    box-shadow: 0 0 0 3px rgba(242, 107, 29, 0.2);
+}
+
+
+/* =====================================================================
+   MIS CITAS (citas.html)
+   ===================================================================== */
+
+/* El formulario de cancelar ocupa todo el ancho de su tarjeta */
+.areaCliente .bloqueTablas form {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* La celda del motivo puede ocupar varias líneas (si no, la tabla sería muy ancha) */
+.areaCliente .tablaDatos td.celdaMotivo {
+    white-space: normal;
+    min-width: 200px;
 }
