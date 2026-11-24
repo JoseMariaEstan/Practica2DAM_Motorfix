@@ -11,6 +11,9 @@ session_start();
 //Indicar que es una respuesta JSON, es decir, para que la web reconozca el archivo
 header("Content-Type: application/json; charset=UTF-8");
 
+//Zona horaria de España, para que time() y date() den la hora de aqui al comprobar las fechas de las citas
+date_default_timezone_set("Europe/Madrid");
+
 // Obtener el contenido del cuerpo de la petición
 $contenidoJSON = file_get_contents('php://input');
 // Usa true como segundo parametro para obtener un array asociativo en lugar de un objeto
@@ -166,6 +169,28 @@ switch ($request["action"]) {
             break;
         }
 
+        if ($cita["fecha_cita"] == "" || $cita["motivo"] == "") {
+            $success = false;
+            $msg = "La fecha y el motivo son obligatorios";
+            break;
+        }
+
+        //La fecha llega del formulario como "2026-11-20T09:30". strtotime la pasa a segundos
+        //para poder compararla con la hora actual (time()). Si no es una fecha valida devuelve false
+        $momentoCita = strtotime($cita["fecha_cita"]);
+        if ($momentoCita === false) {
+            $success = false;
+            $msg = "La fecha no es válida";
+            break;
+        }
+        if ($momentoCita <= time()) {
+            $success = false;
+            $msg = "La fecha de la cita tiene que ser posterior a hoy";
+            break;
+        }
+        //Se guarda con el formato de MySQL: 2026-11-20 09:30:00
+        $cita["fecha_cita"] = date("Y-m-d H:i:s", $momentoCita);
+
         $citaA = new Cita(null, $cita["id_vehiculo"], $cita["fecha_cita"], $cita["motivo"]);
         $success = $citaA->insertCita();
         $msg = $success ? "Cita solicitada. El taller te la confirmará" : "No se pudo pedir la cita";
@@ -188,6 +213,44 @@ switch ($request["action"]) {
             $data = $resultado;
             $msg = "Citas obtenidas correctamente";
         }
+        break;
+
+    case "cancelarCita":
+        //Solo un cliente con la sesion iniciada puede cancelar sus citas
+        if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "cliente") {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $citaA = new Cita($request["data"][0]["id_cita"]);
+        $guardada = $citaA->obtenerCita();
+        if (empty($guardada)) {
+            $success = false;
+            $msg = "Esa cita no existe";
+            break;
+        }
+
+        //La cita no guarda el cliente: se mira de quien es el vehiculo de la cita
+        $vehiculoA = new Vehiculo($guardada[0]["id_vehiculo"]);
+        $vehiculo = $vehiculoA->obtenerVehiculo();
+        if (empty($vehiculo) || $vehiculo[0]["id_cliente"] != $_SESSION["id_cliente"]) {
+            $success = false;
+            $msg = "Esa cita no es tuya";
+            break;
+        }
+
+        //Solo se puede cancelar si el taller todavia no ha empezado a trabajar en el coche
+        if ($guardada[0]["estado"] != "pendiente" && $guardada[0]["estado"] != "confirmada") {
+            $success = false;
+            $msg = "Esta cita ya no se puede cancelar";
+            break;
+        }
+
+        //No se borra: se cambia el estado a cancelada para que quede en el historial
+        $citaA = new Cita($request["data"][0]["id_cita"], null, null, null, "cancelada");
+        $success = $citaA->updateEstado();
+        $msg = $success ? "Cita cancelada correctamente" : "No se pudo cancelar la cita";
         break;
 
     case "misVehiculos":
