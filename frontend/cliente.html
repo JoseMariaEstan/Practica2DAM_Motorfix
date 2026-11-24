@@ -30,7 +30,7 @@
             <header class="barraSuperior">
                 <p class="tituloPagina">Resumen</p>
                 <div class="datosSesion">
-                    <p class="nombreUsuario" id="nombreUsuario">Ana García</p>
+                    <p class="nombreUsuario" id="nombreUsuario"></p>
                     <span class="etiqueta">Cliente</span>
                     <button class="botonBlanco" id="cerrarSesion">Cerrar sesión</button>
                 </div>
@@ -38,7 +38,7 @@
 
             <div class="contenido">
                 <section class="saludo">
-                    <h1 id="saludo">Hola, Ana</h1>
+                    <h1 id="saludo">Hola</h1>
                     <p>Consulta el estado de tu vehículo y tus próximas visitas al taller.</p>
                 </section>
 
@@ -46,26 +46,28 @@
                 <section class="resumen">
                     <article class="tarjeta">
                         <h2>Próxima cita</h2>
-                        <p class="fechaCita">30 oct. 2026 · 09:00</p>
-                        <span class="etiqueta">Confirmada</span>
-                        <p>1234 LBC · SEAT León</p>
-                        <p class="textoGris">Revisión anual</p>
+                        <!-- Los datos se rellenan desde index.js con la cita mas cercana -->
+                        <p class="fechaCita" id="proximaFecha">Cargando...</p>
+                        <span class="etiqueta" id="proximaEstado">-</span>
+                        <p id="proximaVehiculo"></p>
+                        <p class="textoGris" id="proximaMotivo"></p>
                         <a class="enlaceTarjeta" href="citas.html">Ver mis citas</a>
                     </article>
 
                     <article class="tarjeta">
                         <h2>Mis vehículos</h2>
-                        <p class="numeroGrande">2</p>
+                        <p class="numeroGrande" id="numeroVehiculos">0</p>
                         <p>Vehículos registrados</p>
-                        <p class="textoGris">SEAT León y Renault Clio</p>
+                        <p class="textoGris" id="nombresVehiculos"></p>
                         <a class="enlaceTarjeta" href="vehiculos.html">Ver mis vehículos</a>
                     </article>
 
                     <article class="tarjeta">
                         <h2>Última factura</h2>
-                        <p class="totalFactura">290,40 €</p>
-                        <p>F-2026-0148 · 15 oct. 2026</p>
-                        <p class="textoGris">5678 KLM · Renault Clio</p>
+                        <!-- Se rellenara con datos reales en el sprint 5, cuando este la accion de facturas -->
+                        <p class="totalFactura">-</p>
+                        <p>Todavía no hay facturas</p>
+                        <p class="textoGris">Aquí verás el importe de tu última reparación</p>
                         <a class="enlaceTarjeta" href="facturas.html">Ver detalle de factura</a>
                     </article>
                 </section>
