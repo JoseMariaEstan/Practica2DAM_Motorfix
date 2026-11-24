@@ -56,6 +56,22 @@ if (selectVehiculo) {
     });
 }
 
+//Boton de la pagina Pedir cita
+const buttonPedirCita = document.getElementById("pedirCita");
+if (buttonPedirCita) {
+    buttonPedirCita.addEventListener("click", (event) => {
+        pedirCita();
+    });
+}
+
+//Boton de la pagina Mis citas
+const buttonCancelarCita = document.getElementById("cancelarCita");
+if (buttonCancelarCita) {
+    buttonCancelarCita.addEventListener("click", (event) => {
+        cancelarCita();
+    });
+}
+
 //Aqui se guardan los vehiculos que devuelve el servidor,
 //para rellenar el formulario cuando se elige uno en el desplegable
 let listaVehiculos = [];
@@ -69,6 +85,23 @@ if (buttonCerrarSesion) {
 //Si estamos en Mis vehiculos, nada mas cargar se piden los vehiculos al servidor
 if (selectVehiculo) {
     cargarVehiculos();
+}
+
+//Si estamos en Pedir cita, nada mas cargar se rellena el desplegable con los vehiculos
+if (buttonPedirCita) {
+    cargarVehiculosCita();
+}
+
+//Si estamos en Mis citas, nada mas cargar se piden las citas al servidor
+if (buttonCancelarCita) {
+    cargarCitas();
+}
+
+//Si estamos en el Resumen (cliente.html), se rellenan las tarjetas con los datos reales
+const numeroVehiculos = document.getElementById("numeroVehiculos");
+if (numeroVehiculos) {
+    resumenVehiculos();
+    resumenCitas();
 }
 
 //Funciones de los botones
@@ -486,6 +519,319 @@ function borrarVehiculo() {
     });
 }
 
+//Pedir cita
+//Rellena el desplegable de Pedir cita con los vehiculos del cliente
+function cargarVehiculosCita() {
+    let request = {};
+    request.action = "misVehiculos";
+    request.data = [];
+
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+
+        if (data.success) {
+            const vehiculos = data.data;
+
+            //Si no tiene vehiculos no puede pedir cita
+            if (vehiculos.length == 0) {
+                document.getElementById("vehiculoCita").innerHTML = '<option value="">No tienes vehículos registrados</option>';
+                document.getElementById("mensaje").textContent = "Primero añade un vehículo en Mis vehículos";
+                return;
+            }
+
+            //Aqui el value de cada opcion es el id_vehiculo, que es lo que necesita el servidor
+            let opciones = '<option value="">Elige un vehículo</option>';
+            for (let i = 0; i < vehiculos.length; i++) {
+                const vehiculo = vehiculos[i];
+                opciones = opciones + '<option value="' + vehiculo.id_vehiculo + '">' +
+                    vehiculo.matricula + " - " + vehiculo.marca + " " + vehiculo.modelo + "</option>";
+            }
+            document.getElementById("vehiculoCita").innerHTML = opciones;
+        } else {
+            document.getElementById("mensaje").textContent = data.msg;
+        }
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
+//Envia la cita al servidor
+function pedirCita() {
+    console.log("Pulsado botón pedir cita");
+
+    let cita = {};
+    cita.id_vehiculo = document.getElementById("vehiculoCita").value;
+    cita.fecha_cita = document.getElementById("fechaHora").value;
+    cita.motivo = document.getElementById("motivo").value;
+
+    //Comprobamos que no haya campos vacios antes de enviar.
+    //Que la fecha sea futura lo comprueba el servidor
+    if (cita.id_vehiculo == "" || cita.fecha_cita == "" || cita.motivo == "") {
+        document.getElementById("mensaje").textContent = "Elige el vehículo, la fecha y escribe el motivo";
+        return;
+    }
+
+    let request = {};
+    request.action = "pedirCita";
+    request.data = [cita];
+
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        document.getElementById("mensaje").textContent = data.msg;
+
+        //Si se ha guardado se vacia el formulario para poder pedir otra
+        if (data.success) {
+            document.getElementById("vehiculoCita").value = "";
+            document.getElementById("fechaHora").value = "";
+            document.getElementById("motivo").value = "";
+        }
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
+//Mis citas
+//El estado se guarda como "en_reparacion", "pendiente"... Aqui se pasa a un texto para mostrarlo
+function textoEstado(estado) {
+    if (estado == "pendiente") {
+        return "Pendiente";
+    }
+    if (estado == "confirmada") {
+        return "Confirmada";
+    }
+    if (estado == "en_reparacion") {
+        return "En reparación";
+    }
+    if (estado == "finalizada") {
+        return "Finalizada";
+    }
+    if (estado == "facturada") {
+        return "Facturada";
+    }
+    if (estado == "cancelada") {
+        return "Cancelada";
+    }
+    return estado;
+}
+
+//La fecha llega como "2026-12-02 10:30:00" y se muestra como "02/12/2026 10:30".
+//substring(inicio, fin) coge el trozo del texto entre esas dos posiciones
+function formatearFecha(fecha) {
+    const anio = fecha.substring(0, 4);
+    const mes = fecha.substring(5, 7);
+    const dia = fecha.substring(8, 10);
+    const hora = fecha.substring(11, 16);
+    return dia + "/" + mes + "/" + anio + " " + hora;
+}
+
+//Pide las citas al servidor, rellena la tabla y el desplegable de las que se pueden cancelar
+function cargarCitas() {
+    let request = {};
+    request.action = "misCitas";
+    request.data = [];
+
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+
+        if (data.success) {
+            const citas = data.data;
+            let filas = "";
+            let opciones = '<option value="">Elige la cita que quieres cancelar</option>';
+            let cancelables = 0;
+
+            for (let i = 0; i < citas.length; i++) {
+                const cita = citas[i];
+                const vehiculo = cita.matricula + " - " + cita.marca + " " + cita.modelo;
+
+                filas = filas + "<tr>" +
+                    "<td>" + formatearFecha(cita.fecha_cita) + "</td>" +
+                    "<td>" + vehiculo + "</td>" +
+                    '<td class="celdaMotivo">' + cita.motivo + "</td>" +
+                    '<td><span class="etiqueta">' + textoEstado(cita.estado) + "</span></td>" +
+                    "</tr>";
+
+                //Solo se pueden cancelar las que el taller todavia no ha empezado
+                if (cita.estado == "pendiente" || cita.estado == "confirmada") {
+                    opciones = opciones + '<option value="' + cita.id_cita + '">' +
+                        formatearFecha(cita.fecha_cita) + " - " + vehiculo + "</option>";
+                    cancelables = cancelables + 1;
+                }
+            }
+
+            if (citas.length == 0) {
+                filas = '<tr><td colspan="4">Todavía no has pedido ninguna cita</td></tr>';
+            }
+            if (cancelables == 0) {
+                opciones = '<option value="">No tienes citas que se puedan cancelar</option>';
+            }
+
+            document.getElementById("tablaCitas").innerHTML = filas;
+            document.getElementById("citaCancelar").innerHTML = opciones;
+        } else {
+            document.getElementById("mensaje").textContent = data.msg;
+        }
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
+//Cancelar cita
+function cancelarCita() {
+    console.log("Pulsado botón cancelar cita");
+
+    const id_cita = document.getElementById("citaCancelar").value;
+    if (id_cita == "") {
+        document.getElementById("mensaje").textContent = "Elige primero la cita que quieres cancelar";
+        return;
+    }
+
+    let request = {};
+    request.action = "cancelarCita";
+    request.data = [{
+        id_cita: id_cita
+    }];
+
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        document.getElementById("mensaje").textContent = data.msg;
+
+        //Si se ha cancelado se vuelve a pedir la lista para que salga el nuevo estado
+        if (data.success) {
+            cargarCitas();
+        }
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
+//Resumen (cliente.html)
+//Tarjeta "Mis vehiculos": cuantos tiene y cuales son
+function resumenVehiculos() {
+    let request = {};
+    request.action = "misVehiculos";
+    request.data = [];
+
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+
+        if (data.success) {
+            const vehiculos = data.data;
+            document.getElementById("numeroVehiculos").textContent = vehiculos.length;
+
+            //Se juntan los nombres separados por comas: "Seat León, Renault Clio"
+            let nombres = "";
+            for (let i = 0; i < vehiculos.length; i++) {
+                if (i > 0) {
+                    nombres = nombres + ", ";
+                }
+                nombres = nombres + vehiculos[i].marca + " " + vehiculos[i].modelo;
+            }
+            if (vehiculos.length == 0) {
+                nombres = "Todavía no has añadido ninguno";
+            }
+            document.getElementById("nombresVehiculos").textContent = nombres;
+        }
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
+//Tarjeta "Proxima cita": la cita activa con la fecha mas cercana
+function resumenCitas() {
+    let request = {};
+    request.action = "misCitas";
+    request.data = [];
+
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+
+        if (data.success) {
+            const citas = data.data;
+            let proxima = null;
+
+            for (let i = 0; i < citas.length; i++) {
+                const cita = citas[i];
+                //Solo cuentan las citas que siguen activas
+                if (cita.estado == "pendiente" || cita.estado == "confirmada" || cita.estado == "en_reparacion") {
+                    //Las fechas "2026-12-02 10:30:00" se pueden comparar como texto:
+                    //la que es menor es la que va antes
+                    if (proxima == null || cita.fecha_cita < proxima.fecha_cita) {
+                        proxima = cita;
+                    }
+                }
+            }
+
+            if (proxima == null) {
+                document.getElementById("proximaFecha").textContent = "No tienes citas pendientes";
+                document.getElementById("proximaEstado").textContent = "Sin citas";
+                document.getElementById("proximaVehiculo").textContent = "";
+                document.getElementById("proximaMotivo").textContent = "Pide una cita cuando la necesites";
+            } else {
+                document.getElementById("proximaFecha").textContent = formatearFecha(proxima.fecha_cita);
+                document.getElementById("proximaEstado").textContent = textoEstado(proxima.estado);
+                document.getElementById("proximaVehiculo").textContent = proxima.matricula + " - " + proxima.marca + " " + proxima.modelo;
+                document.getElementById("proximaMotivo").textContent = proxima.motivo;
+            }
+        }
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
 /* Respuesta
 {
     data: [{}, {}],
@@ -496,7 +842,7 @@ function borrarVehiculo() {
 
 // Envío
 {
-    action: login/registro/sesion/logout/pedirCita/misCitas/misVehiculos/insertVehiculo/updateVehiculo/deleteVehiculo,
+    action: login/registro/sesion/logout/pedirCita/misCitas/cancelarCita/misVehiculos/insertVehiculo/updateVehiculo/deleteVehiculo,
     data: [{}],
     filters: {},
     page: ,

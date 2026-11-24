@@ -42,7 +42,37 @@
                     <p>Elige el vehículo, la fecha y el motivo de tu visita.</p>
                 </section>
 
-                <!-- Aquí irá el formulario para pedir cita (MF-23) -->
+                <!-- Formulario para pedir una cita en el taller -->
+                <section class="bloqueCita">
+                    <article class="tarjeta">
+                        <h2>Datos de la cita</h2>
+                        <form>
+                            <div>
+                                <label for="vehiculoCita">Vehículo</label>
+                                <select id="vehiculoCita">
+                                    <option value="">Cargando tus vehículos...</option>
+                                </select>
+                                <small>¿No aparece tu vehículo? Añádelo en <a href="vehiculos.html">Mis vehículos</a></small>
+                            </div>
+                            <div>
+                                <label for="fechaHora">Fecha y hora</label>
+                                <input type="datetime-local" id="fechaHora">
+                                <small>El taller te confirmará la cita o te propondrá otra hora</small>
+                            </div>
+                            <div>
+                                <label for="motivo">Motivo de la visita</label>
+                                <textarea id="motivo" rows="4" placeholder="Revisión, ruido al frenar, cambio de aceite..."></textarea>
+                            </div>
+
+                            <p id="mensaje"></p>
+
+                            <div class="botonesFormulario">
+                                <button type="button" class="botonNaranja" id="pedirCita">Pedir cita</button>
+                                <a class="botonBlanco" href="citas.html">Ver mis citas</a>
+                            </div>
+                        </form>
+                    </article>
+                </section>
             </div>
         </main>
     </div>
