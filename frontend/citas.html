@@ -42,7 +42,47 @@
                     <p>Consulta el estado de tus citas en el taller.</p>
                 </section>
 
-                <!-- Aquí irá el listado de citas (MF-24) -->
+                <section class="bloqueTablas">
+                    <!-- Tabla con las citas del cliente (se rellena desde index.js) -->
+                    <article class="tarjeta">
+                        <h2>Historial de citas</h2>
+                        <div class="cajaTabla">
+                            <table class="tablaDatos">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Vehículo</th>
+                                        <th>Motivo</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaCitas">
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <!-- Cancelar una cita que todavia no ha empezado -->
+                    <article class="tarjeta">
+                        <h2>Cancelar una cita</h2>
+                        <form>
+                            <div>
+                                <label for="citaCancelar">Cita</label>
+                                <select id="citaCancelar">
+                                    <option value="">Cargando tus citas...</option>
+                                </select>
+                                <small>Solo se pueden cancelar las citas pendientes o confirmadas</small>
+                            </div>
+
+                            <p id="mensaje"></p>
+
+                            <div class="botonesFormulario">
+                                <button type="button" class="botonBlanco" id="cancelarCita">Cancelar cita</button>
+                                <a class="botonNaranja" href="Pedircita.html">Pedir otra cita</a>
+                            </div>
+                        </form>
+                    </article>
+                </section>
             </div>
         </main>
     </div>
