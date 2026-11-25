@@ -3,6 +3,8 @@ require_once __DIR__ . "/Usuario.php";
 require_once __DIR__ . "/Cliente.php";
 require_once __DIR__ . "/Vehiculo.php";
 require_once __DIR__ . "/Cita.php";
+require_once __DIR__ . "/ManoObra.php";
+require_once __DIR__ . "/Repuesto.php";
 
 //Arranca la sesion. PHP guarda los datos en el servidor y le da al navegador
 //una cookie (PHPSESSID) para reconocerlo en las siguientes peticiones
@@ -31,6 +33,9 @@ if (!isset($request["action"])) {
 
 //Oficina y admin pueden usar las acciones del panel de oficina
 $esOficina = isset($_SESSION["rol"]) && ($_SESSION["rol"] == "oficina" || $_SESSION["rol"] == "admin");
+
+//Las acciones del panel del mecanico solo las puede usar un mecanico
+$esMecanico = isset($_SESSION["rol"]) && $_SESSION["rol"] == "mecanico";
 
 switch ($request["action"]) {
     case "login":
