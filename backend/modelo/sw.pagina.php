@@ -29,6 +29,9 @@ if (!isset($request["action"])) {
     $request["action"] = "";
 }
 
+//Oficina y admin pueden usar las acciones del panel de oficina
+$esOficina = isset($_SESSION["rol"]) && ($_SESSION["rol"] == "oficina" || $_SESSION["rol"] == "admin");
+
 switch ($request["action"]) {
     case "login":
         $email = $request["data"][0]["email"];
@@ -354,6 +357,117 @@ switch ($request["action"]) {
         $success = $vehiculoA->deleteVehiculo();
         //Si el vehiculo tiene citas no se puede borrar (la FK de cita tiene ON DELETE RESTRICT)
         $msg = $success ? "Vehículo borrado correctamente" : "No se puede borrar el vehículo porque tiene citas";
+        break;
+
+    //---------- PANEL DE OFICINA ----------
+    case "citasOficina":
+        //Oficina ve todas las citas del taller, con el cliente y el mecanico de cada una
+        if (!$esOficina) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $citaA = new Cita();
+        $resultado = $citaA->obtenerTodas();
+        if ($resultado === false) {
+            $success = false;
+            $msg = "Error al obtener las citas";
+        } else {
+            $data = $resultado;
+            $msg = "Citas obtenidas correctamente";
+        }
+        break;
+
+    case "listarMecanicos":
+        //Para rellenar el desplegable de "Asignar mecanico"
+        if (!$esOficina) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $usuarioA = new Usuario();
+        $resultado = $usuarioA->obtenerMecanicos();
+        if ($resultado === false) {
+            $success = false;
+            $msg = "Error al obtener los mecánicos";
+        } else {
+            $data = $resultado;
+            $msg = "Mecánicos obtenidos correctamente";
+        }
+        break;
+
+    case "confirmarCita":
+        //Oficina confirma la cita y le asigna el mecanico que la va a hacer.
+        //Tambien sirve para cambiar de mecanico una cita que ya estaba confirmada
+        if (!$esOficina) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $id_cita = $request["data"][0]["id_cita"];
+        $id_mecanico = $request["data"][0]["id_mecanico"];
+
+        $citaA = new Cita($id_cita);
+        $guardada = $citaA->obtenerCita();
+        if (empty($guardada)) {
+            $success = false;
+            $msg = "Esa cita no existe";
+            break;
+        }
+        if ($guardada[0]["estado"] != "pendiente" && $guardada[0]["estado"] != "confirmada") {
+            $success = false;
+            $msg = "Solo se pueden confirmar las citas pendientes o confirmadas";
+            break;
+        }
+
+        //Se comprueba que el id que llega es de verdad un mecanico activo
+        $usuarioA = new Usuario();
+        $mecanicos = $usuarioA->obtenerMecanicos();
+        $nombreMecanico = "";
+        foreach ($mecanicos as $mecanico) {
+            if ($mecanico["id_usuario"] == $id_mecanico) {
+                $nombreMecanico = $mecanico["nombre"];
+            }
+        }
+        if ($nombreMecanico == "") {
+            $success = false;
+            $msg = "Elige un mecánico válido";
+            break;
+        }
+
+        //Primero se asigna el mecanico y despues se cambia el estado a confirmada
+        $citaA = new Cita($id_cita, null, null, null, "confirmada", $id_mecanico);
+        $success = $citaA->asignarMecanico() && $citaA->updateEstado();
+        $msg = $success ? "Cita confirmada y asignada a " . $nombreMecanico : "No se pudo confirmar la cita";
+        break;
+
+    case "rechazarCita":
+        //Oficina cancela una cita que no se puede atender (pendiente o confirmada)
+        if (!$esOficina) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $citaA = new Cita($request["data"][0]["id_cita"]);
+        $guardada = $citaA->obtenerCita();
+        if (empty($guardada)) {
+            $success = false;
+            $msg = "Esa cita no existe";
+            break;
+        }
+        if ($guardada[0]["estado"] != "pendiente" && $guardada[0]["estado"] != "confirmada") {
+            $success = false;
+            $msg = "Esta cita ya no se puede cancelar";
+            break;
+        }
+
+        $citaA = new Cita($request["data"][0]["id_cita"], null, null, null, "cancelada");
+        $success = $citaA->updateEstado();
+        $msg = $success ? "Cita cancelada correctamente" : "No se pudo cancelar la cita";
         break;
 
     default:

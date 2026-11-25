@@ -80,6 +80,22 @@ class Usuario {
         }
     }
 
+    // Devuelve los mecanicos que estan activos, para que oficina elija a quien asignar una cita
+    public function obtenerMecanicos() {
+        try {
+            $conexion = BD::getInstance()->getConexion();
+            $sql = "SELECT id_usuario, nombre, apellidos FROM usuario
+                    WHERE rol = 'mecanico' AND activo = 1
+                    ORDER BY nombre";
+            $stmt = $conexion->prepare($sql);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
     // Comprueba si la contraseña escrita coincide con el hash de la base de datos
     public function verificarPassword($passwordEscrita, $hashGuardado) {
         return password_verify($passwordEscrita, $hashGuardado);

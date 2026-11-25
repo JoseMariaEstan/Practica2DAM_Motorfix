@@ -116,6 +116,29 @@ class Cita {
         }
     }
 
+    // Devuelve todas las citas del taller para el panel de oficina, con los datos
+    // del vehiculo, del cliente y el nombre del mecanico asignado.
+    // LEFT JOIN con usuario porque las citas pendientes todavia no tienen mecanico (id_mecanico es null)
+    public function obtenerTodas() {
+        try {
+            $conexion = BD::getInstance()->getConexion();
+            $sql = "SELECT c.*, v.matricula, v.marca, v.modelo,
+                           cl.nombre AS nombre_cliente, cl.apellidos AS apellidos_cliente, cl.telefono,
+                           u.nombre AS nombre_mecanico
+                    FROM cita c
+                    JOIN vehiculo v ON v.id_vehiculo = c.id_vehiculo
+                    JOIN cliente cl ON cl.id_cliente = v.id_cliente
+                    LEFT JOIN usuario u ON u.id_usuario = c.id_mecanico
+                    ORDER BY c.fecha_cita DESC";
+            $stmt = $conexion->prepare($sql);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
     // Cambia la fecha, el motivo, el diagnostico y las observaciones
     public function updateCita() {
         try {
