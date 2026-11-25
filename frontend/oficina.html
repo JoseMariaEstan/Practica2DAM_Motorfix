@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotorFix - Oficina</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="index.js" defer></script>
+        <!--defer -> para que se ejecute después de que se cargue completamente el HTML-->
+</head>
+<!-- Se usa la misma clase areaCliente para reutilizar los estilos del menu, la barra y las tarjetas -->
+<body class="areaCliente">
+    <div class="contenedor">
+        <!-- Menú lateral -->
+        <aside class="menuLateral">
+            <div class="cajaLogo">
+                <p class="logo">MotorFix</p>
+            </div>
+            <nav class="menu">
+                <p class="tituloMenu">OFICINA</p>
+                <a class="item_nav seleccionado" href="oficina.html">Citas</a>
+            </nav>
+        </aside>
+
+        <main class="zonaPrincipal">
+            <!-- Barra superior -->
+            <header class="barraSuperior">
+                <p class="tituloPagina">Gestión de citas</p>
+                <div class="datosSesion">
+                    <p class="nombreUsuario" id="nombreUsuario"></p>
+                    <span class="etiqueta">Oficina</span>
+                    <button class="botonBlanco" id="cerrarSesion">Cerrar sesión</button>
+                </div>
+            </header>
+
+            <div class="contenido">
+                <section class="saludo">
+                    <h1>Gestión de citas</h1>
+                    <p>Confirma las citas que piden los clientes y asigna el mecánico que hará cada reparación.</p>
+                </section>
+
+                <section class="bloqueTablas">
+                    <!-- Formulario para confirmar o rechazar una cita -->
+                    <article class="tarjeta">
+                        <h2>Confirmar o rechazar una cita</h2>
+                        <form>
+                            <div>
+                                <label for="citaGestionar">Cita</label>
+                                <select id="citaGestionar">
+                                    <option value="">Cargando citas...</option>
+                                </select>
+                                <small>Solo aparecen las citas pendientes o confirmadas</small>
+                            </div>
+                            <div>
+                                <label for="mecanicoCita">Mecánico</label>
+                                <select id="mecanicoCita">
+                                    <option value="">Cargando mecánicos...</option>
+                                </select>
+                                <small>Si la cita ya estaba confirmada, se cambia de mecánico</small>
+                            </div>
+
+                            <p id="mensaje"></p>
+
+                            <div class="botonesFormulario">
+                                <button type="button" class="botonNaranja" id="confirmarCitaOficina">Confirmar y asignar</button>
+                                <button type="button" class="botonBlanco" id="rechazarCitaOficina">Rechazar cita</button>
+                            </div>
+                        </form>
+                    </article>
+
+                    <!-- Tabla con todas las citas del taller (se rellena desde index.js) -->
+                    <article class="tarjeta">
+                        <h2>Todas las citas</h2>
+                        <div class="cajaTabla">
+                            <table class="tablaDatos">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Cliente</th>
+                                        <th>Vehículo</th>
+                                        <th>Motivo</th>
+                                        <th>Mecánico</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaCitasOficina">
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

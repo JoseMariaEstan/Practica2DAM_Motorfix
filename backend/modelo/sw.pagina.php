@@ -3,6 +3,8 @@ require_once __DIR__ . "/Usuario.php";
 require_once __DIR__ . "/Cliente.php";
 require_once __DIR__ . "/Vehiculo.php";
 require_once __DIR__ . "/Cita.php";
+require_once __DIR__ . "/ManoObra.php";
+require_once __DIR__ . "/Repuesto.php";
 
 //Arranca la sesion. PHP guarda los datos en el servidor y le da al navegador
 //una cookie (PHPSESSID) para reconocerlo en las siguientes peticiones
@@ -31,6 +33,9 @@ if (!isset($request["action"])) {
 
 //Oficina y admin pueden usar las acciones del panel de oficina
 $esOficina = isset($_SESSION["rol"]) && ($_SESSION["rol"] == "oficina" || $_SESSION["rol"] == "admin");
+
+//Las acciones del panel del mecanico solo las puede usar un mecanico
+$esMecanico = isset($_SESSION["rol"]) && $_SESSION["rol"] == "mecanico";
 
 switch ($request["action"]) {
     case "login":
@@ -468,6 +473,222 @@ switch ($request["action"]) {
         $citaA = new Cita($request["data"][0]["id_cita"], null, null, null, "cancelada");
         $success = $citaA->updateEstado();
         $msg = $success ? "Cita cancelada correctamente" : "No se pudo cancelar la cita";
+        break;
+
+    //---------- PANEL DEL MECANICO ----------
+    case "misTrabajos":
+        //Hoja de trabajo: las citas que oficina le ha asignado al mecanico de la sesion
+        if (!$esMecanico) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $citaA = new Cita(null, null, null, null, null, $_SESSION["id_usuario"]);
+        $resultado = $citaA->obtenerPorMecanico();
+        if ($resultado === false) {
+            $success = false;
+            $msg = "Error al obtener los trabajos";
+        } else {
+            $data = $resultado;
+            $msg = "Trabajos obtenidos correctamente";
+        }
+        break;
+
+    case "detalleTrabajo":
+        //Devuelve las horas y los repuestos que lleva imputados una cita del mecanico
+        if (!$esMecanico) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $id_cita = $request["data"][0]["id_cita"];
+        $citaA = new Cita($id_cita);
+        $guardada = $citaA->obtenerCita();
+        if (empty($guardada) || $guardada[0]["id_mecanico"] != $_SESSION["id_usuario"]) {
+            $success = false;
+            $msg = "Esa cita no está asignada a ti";
+            break;
+        }
+
+        $manoObraA = new ManoObra(null, $id_cita);
+        $repuestoA = new Repuesto(null, $id_cita);
+        //Se devuelve un solo objeto con las dos listas
+        $data = [[
+            "horas" => $manoObraA->obtenerPorCita(),
+            "repuestos" => $repuestoA->obtenerPorCita()
+        ]];
+        $msg = "Detalle obtenido correctamente";
+        break;
+
+    case "cambiarEstadoTrabajo":
+        //El mecanico empieza la reparacion (confirmada -> en_reparacion)
+        //o la termina (en_reparacion -> finalizada)
+        if (!$esMecanico) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $id_cita = $request["data"][0]["id_cita"];
+        $estadoNuevo = $request["data"][0]["estado"];
+
+        $citaA = new Cita($id_cita);
+        $guardada = $citaA->obtenerCita();
+        if (empty($guardada) || $guardada[0]["id_mecanico"] != $_SESSION["id_usuario"]) {
+            $success = false;
+            $msg = "Esa cita no está asignada a ti";
+            break;
+        }
+
+        //Solo se permiten estos dos pasos, en este orden
+        $estadoActual = $guardada[0]["estado"];
+        $pasoValido = ($estadoActual == "confirmada" && $estadoNuevo == "en_reparacion")
+                   || ($estadoActual == "en_reparacion" && $estadoNuevo == "finalizada");
+        if (!$pasoValido) {
+            $success = false;
+            $msg = "No se puede pasar de " . $estadoActual . " a " . $estadoNuevo;
+            break;
+        }
+
+        //Para finalizar tiene que haber imputado algo, si no la factura saldria a 0
+        if ($estadoNuevo == "finalizada") {
+            $manoObraA = new ManoObra(null, $id_cita);
+            $repuestoA = new Repuesto(null, $id_cita);
+            if (empty($manoObraA->obtenerPorCita()) && empty($repuestoA->obtenerPorCita())) {
+                $success = false;
+                $msg = "Imputa las horas o los repuestos antes de finalizar la reparación";
+                break;
+            }
+        }
+
+        $citaA = new Cita($id_cita, null, null, null, $estadoNuevo);
+        $success = $citaA->updateEstado();
+        $msg = $success ? "Estado cambiado correctamente" : "No se pudo cambiar el estado";
+        break;
+
+    case "imputarHoras":
+        //Añade una linea de mano de obra a una cita que el mecanico tiene en reparacion
+        if (!$esMecanico) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $linea = $request["data"][0];
+        $citaA = new Cita($linea["id_cita"]);
+        $guardada = $citaA->obtenerCita();
+        if (empty($guardada) || $guardada[0]["id_mecanico"] != $_SESSION["id_usuario"]) {
+            $success = false;
+            $msg = "Esa cita no está asignada a ti";
+            break;
+        }
+        if ($guardada[0]["estado"] != "en_reparacion") {
+            $success = false;
+            $msg = "Solo se pueden imputar horas a una cita en reparación";
+            break;
+        }
+        if ($linea["descripcion"] == "" || $linea["horas"] == "" || $linea["horas"] <= 0) {
+            $success = false;
+            $msg = "Escribe el trabajo hecho y un número de horas mayor que 0";
+            break;
+        }
+
+        //El precio por hora no lo manda el navegador: se usa el del taller (45 por defecto en la clase)
+        $manoObraA = new ManoObra(null, $linea["id_cita"], $linea["descripcion"], $linea["horas"]);
+        $success = $manoObraA->insertManoObra();
+        $msg = $success ? "Horas imputadas correctamente" : "No se pudieron imputar las horas";
+        break;
+
+    case "imputarRepuesto":
+        //Añade un repuesto a una cita que el mecanico tiene en reparacion
+        if (!$esMecanico) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $linea = $request["data"][0];
+        $citaA = new Cita($linea["id_cita"]);
+        $guardada = $citaA->obtenerCita();
+        if (empty($guardada) || $guardada[0]["id_mecanico"] != $_SESSION["id_usuario"]) {
+            $success = false;
+            $msg = "Esa cita no está asignada a ti";
+            break;
+        }
+        if ($guardada[0]["estado"] != "en_reparacion") {
+            $success = false;
+            $msg = "Solo se pueden imputar repuestos a una cita en reparación";
+            break;
+        }
+        if ($linea["descripcion"] == "" || $linea["cantidad"] == "" || $linea["cantidad"] <= 0
+            || $linea["precio_unitario"] == "" || $linea["precio_unitario"] < 0) {
+            $success = false;
+            $msg = "Escribe la pieza, una cantidad mayor que 0 y el precio";
+            break;
+        }
+
+        $repuestoA = new Repuesto(null, $linea["id_cita"], $linea["descripcion"], $linea["cantidad"], $linea["precio_unitario"]);
+        $success = $repuestoA->insertRepuesto();
+        $msg = $success ? "Repuesto añadido correctamente" : "No se pudo añadir el repuesto";
+        break;
+
+    case "borrarHoras":
+        //Por si el mecanico se equivoca al imputar: borra una linea de horas
+        if (!$esMecanico) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $manoObraA = new ManoObra($request["data"][0]["id_mano_obra"]);
+        $lineaGuardada = $manoObraA->obtenerManoObra();
+        if (empty($lineaGuardada)) {
+            $success = false;
+            $msg = "Esa línea no existe";
+            break;
+        }
+
+        //La linea tiene que ser de una cita suya y que siga en reparacion
+        $citaA = new Cita($lineaGuardada[0]["id_cita"]);
+        $guardada = $citaA->obtenerCita();
+        if ($guardada[0]["id_mecanico"] != $_SESSION["id_usuario"] || $guardada[0]["estado"] != "en_reparacion") {
+            $success = false;
+            $msg = "Solo puedes borrar líneas de tus citas en reparación";
+            break;
+        }
+
+        $success = $manoObraA->deleteManoObra();
+        $msg = $success ? "Horas borradas correctamente" : "No se pudieron borrar las horas";
+        break;
+
+    case "borrarRepuesto":
+        //Por si el mecanico se equivoca al imputar: borra un repuesto
+        if (!$esMecanico) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $repuestoA = new Repuesto($request["data"][0]["id_repuesto"]);
+        $lineaGuardada = $repuestoA->obtenerRepuesto();
+        if (empty($lineaGuardada)) {
+            $success = false;
+            $msg = "Ese repuesto no existe";
+            break;
+        }
+
+        $citaA = new Cita($lineaGuardada[0]["id_cita"]);
+        $guardada = $citaA->obtenerCita();
+        if ($guardada[0]["id_mecanico"] != $_SESSION["id_usuario"] || $guardada[0]["estado"] != "en_reparacion") {
+            $success = false;
+            $msg = "Solo puedes borrar líneas de tus citas en reparación";
+            break;
+        }
+
+        $success = $repuestoA->deleteRepuesto();
+        $msg = $success ? "Repuesto borrado correctamente" : "No se pudo borrar el repuesto";
         break;
 
     default:

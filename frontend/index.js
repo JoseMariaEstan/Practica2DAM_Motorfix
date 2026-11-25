@@ -142,7 +142,7 @@ function loginUsuario() {
             console.log("Nombre: " + usuarioLogueado.nombre);
             console.log("Rol: " + usuarioLogueado.rol);
 
-            //Segun el rol del usuario le mandamos a su panel
+                        //Segun el rol del usuario le mandamos a su panel
             if (usuarioLogueado.rol == "cliente") {
                 window.location.href = "cliente.html";
             }
@@ -152,8 +152,9 @@ function loginUsuario() {
             if (usuarioLogueado.rol == "mecanico") {
                 window.location.href = "mecanico.html";
             }
+            //El admin usa el mismo panel que oficina
             if (usuarioLogueado.rol == "admin") {
-                window.location.href = "admin.html";
+                window.location.href = "oficina.html";
             }
         }
     })
