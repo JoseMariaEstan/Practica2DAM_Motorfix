@@ -1,0 +1,16 @@
+/* =====================================================================
+   MIS VEHÍCULOS (vehiculos.html)
+   Se carga después de comun.css y areaCliente.css
+   ===================================================================== */
+
+/* El formulario ocupa todo el ancho de la tarjeta */
+.areaCliente .bloqueVehiculos form {
+    width: 100%;
+}
+
+/* Grid con auto-fit: los campos se ponen en 3, 2 o 1 columna según el ancho */
+.areaCliente .bloqueVehiculos form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0 16px;
+}

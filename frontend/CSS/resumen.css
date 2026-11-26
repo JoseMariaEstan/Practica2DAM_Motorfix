@@ -1,0 +1,58 @@
+/* =====================================================================
+   RESUMEN (cliente.html)
+   Se carga después de comun.css y areaCliente.css
+   ===================================================================== */
+
+/* Textos en gris del saludo y del aviso */
+.areaCliente .saludo p,
+.areaCliente .avisoCita p {
+    color: #5F6670;
+}
+
+.areaCliente .saludo {
+    margin-bottom: 24px;
+}
+
+/* Grid con auto-fit: tantas columnas de al menos 180px como quepan
+   (3 en el ordenador, 2 en tablet, 1 en el móvil), todas del mismo ancho */
+.areaCliente .resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* El aviso de "Pedir cita" es una tarjeta blanca como las de areaCliente.css */
+.areaCliente .avisoCita {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.areaCliente .fechaCita {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.areaCliente .numeroGrande,
+.areaCliente .totalFactura {
+    margin-bottom: 4px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #F26B1D;
+}
+
+/* Aviso de "Pedir cita" con borde naranja a la izquierda
+   (va después de la regla de arriba para cambiarle el border-radius) */
+.areaCliente .avisoCita {
+    border-left: 4px solid #F26B1D;
+    border-radius: 0 8px 8px 0;
+}
+
+.areaCliente .avisoCita p {
+    margin-bottom: 16px;
+}

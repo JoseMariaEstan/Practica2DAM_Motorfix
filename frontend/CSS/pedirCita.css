@@ -1,0 +1,30 @@
+/* =====================================================================
+   PEDIR CITA (Pedircita.html)
+   Se carga después de comun.css y areaCliente.css
+   ===================================================================== */
+
+/* El formulario no necesita todo el ancho: como mucho 600px */
+.areaCliente .bloqueCita {
+    max-width: 600px;
+}
+
+.areaCliente .bloqueCita form {
+    width: 100%;
+}
+
+/* La caja del motivo con el mismo aspecto que los input */
+.areaCliente textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif; /* el textarea no hereda la fuente del body */
+    border: 1px solid #D0D4DA;
+    border-radius: 6px;
+    resize: vertical; /* solo se puede estirar hacia abajo */
+}
+
+.areaCliente textarea:focus {
+    outline: none;
+    border-color: #F26B1D;
+    box-shadow: 0 0 0 3px rgba(242, 107, 29, 0.2);
+}
