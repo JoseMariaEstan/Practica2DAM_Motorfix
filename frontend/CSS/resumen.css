@@ -3,14 +3,9 @@
    Se carga después de comun.css y areaCliente.css
    ===================================================================== */
 
-/* Textos en gris del saludo y del aviso */
-.areaCliente .saludo p,
+/* Texto en gris del aviso */
 .areaCliente .avisoCita p {
     color: #5F6670;
-}
-
-.areaCliente .saludo {
-    margin-bottom: 24px;
 }
 
 /* Grid con auto-fit: tantas columnas de al menos 180px como quepan

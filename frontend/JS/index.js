@@ -1,8 +1,10 @@
 //Codigo comun que usan todas las paginas. Se carga ANTES que el js de cada pagina
 
-//URL del servicio web. Es relativa a la carpeta frontend, asi funciona
-//da igual en que ruta de localhost tengas el proyecto
-const url = "../backend/modelo/sw.pagina.php";
+//URL de cada servicio web. Son relativas a la pagina HTML (carpeta frontend), no a este archivo,
+//asi funciona da igual en que ruta de localhost tengas el proyecto
+const urlUsuario = "../backend/modelo/SW/sw.usuario.php";
+const urlVehiculo = "../backend/modelo/SW/sw.vehiculo.php";
+const urlCita = "../backend/modelo/SW/sw.cita.php";
 
 //El boton de cerrar sesion esta en el menu de todas las paginas del area de cliente
 const buttonCerrarSesion = document.getElementById("cerrarSesion");
@@ -25,7 +27,7 @@ function comprobarSesion() {
     request.action = "sesion";
     request.data = [];
 
-    fetch(url, {
+    fetch(urlUsuario, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {
@@ -62,7 +64,7 @@ function cerrarSesion() {
     request.action = "logout";
     request.data = [];
 
-    fetch(url, {
+    fetch(urlUsuario, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {

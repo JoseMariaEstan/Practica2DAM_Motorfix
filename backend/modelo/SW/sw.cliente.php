@@ -4,8 +4,7 @@
    Acciones: get, getMio, update, delete
    (el insert se hace en el registro de sw.usuario.php)
    ===================================================================== */
-require_once "sw.comun.php";
-require_once "Cliente.php";
+require_once __DIR__ . "/sw.pagina.php";
 
 $request = leerPeticion();
 $datos = $request["data"][0] ?? [];
@@ -31,7 +30,7 @@ switch ($request["action"] ?? "") {
 function obtenerCliente(array $datos): void {
     comprobarSesion(["oficina", "admin"]);
     $cliente = new Cliente($datos["id_cliente"] ?? null);
-    $resultado = $cliente->getCliente();
+    $resultado = $cliente->obtenerCliente();
     if (empty($resultado)) {
         enviarRespuesta(false, "No se encontró el cliente");
     }

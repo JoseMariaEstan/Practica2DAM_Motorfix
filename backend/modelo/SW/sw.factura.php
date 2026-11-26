@@ -1,11 +1,9 @@
 <?php
 /* =====================================================================
    sw.factura.php - Servicio de facturas (PLANTILLA)
-   Todavía no existe Factura.php: cuando la hagas, descomenta el require
-   y rellena cada función como en sw.vehiculo.php
+   Factura.php ya está hecha (MF-27). Las funciones se rellenan en MF-33
    ===================================================================== */
-require_once "sw.comun.php";
-//require_once "Factura.php";
+require_once __DIR__ . "/sw.pagina.php";
 
 $request = leerPeticion();
 $datos = $request["data"][0] ?? [];

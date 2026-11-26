@@ -1,122 +1,120 @@
 <?php
 /* =====================================================================
-   sw.vehiculo.php - Servicio de vehículos
-   Acciones: insert, get, getPorCliente, update, delete
+   sw.vehiculo.php - Servicio web de vehículos
+   Acciones: misVehiculos, insertVehiculo, updateVehiculo y deleteVehiculo (cliente)
+   La parte comun (sesion, leer la peticion, clases...) esta en sw.pagina.php
    ===================================================================== */
-require_once "sw.comun.php";
-require_once "Vehiculo.php";
+require_once __DIR__ . "/sw.pagina.php";
 
-$request = leerPeticion();
-$datos = $request["data"][0] ?? [];
+switch ($request["action"]) {
+    case "misVehiculos":
+        //Solo un cliente con la sesion iniciada, y solo ve los suyos
+        if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "cliente") {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
 
-switch ($request["action"] ?? "") {
-    case "insert":
-        insertarVehiculo($datos);
+        $vehiculoA = new Vehiculo(null, $_SESSION["id_cliente"]);
+        $resultado = $vehiculoA->obtenerPorCliente();
+        if ($resultado === false) {
+            $success = false;
+            $msg = "Error al obtener los vehículos";
+        } else {
+            $data = $resultado; //puede estar vacio si todavia no tiene vehiculos
+            $msg = "Vehículos obtenidos correctamente";
+        }
         break;
-    case "get":
-        obtenerVehiculo($datos);
+
+    case "insertVehiculo":
+        if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "cliente") {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $vehiculo = $request["data"][0];
+        //La matricula se guarda siempre igual: en mayusculas y sin espacios (1234 abc -> 1234ABC)
+        $vehiculo["matricula"] = strtoupper(str_replace(" ", "", $vehiculo["matricula"]));
+
+        if ($vehiculo["matricula"] == "" || $vehiculo["marca"] == "" || $vehiculo["modelo"] == "") {
+            $success = false;
+            $msg = "La matrícula, la marca y el modelo son obligatorios";
+            break;
+        }
+
+        //El id_cliente sale de la sesion: el cliente solo puede añadir vehiculos a su nombre
+        //Los campos opcionales vacios se guardan como null
+        $vehiculoA = new Vehiculo(null, $_SESSION["id_cliente"], $vehiculo["matricula"], $vehiculo["marca"], $vehiculo["modelo"],
+            $vehiculo["anio"] == "" ? null : $vehiculo["anio"],
+            $vehiculo["color"] == "" ? null : $vehiculo["color"],
+            $vehiculo["kilometros"] == "" ? null : $vehiculo["kilometros"],
+            $vehiculo["combustible"] == "" ? null : $vehiculo["combustible"]);
+        $success = $vehiculoA->insertVehiculo();
+        //La matricula es UNIQUE en la tabla, si ya existe el insert falla
+        $msg = $success ? "Vehículo añadido correctamente" : "No se pudo añadir el vehículo (puede que la matrícula ya esté registrada)";
         break;
-    case "getPorCliente":
-        obtenerVehiculosCliente($datos);
+
+    case "updateVehiculo":
+        if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "cliente") {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $vehiculo = $request["data"][0];
+        $vehiculo["matricula"] = strtoupper(str_replace(" ", "", $vehiculo["matricula"]));
+
+        //Antes de modificar se comprueba que el vehiculo es del cliente de la sesion
+        $vehiculoA = new Vehiculo($vehiculo["id_vehiculo"]);
+        $guardado = $vehiculoA->obtenerVehiculo();
+        if (empty($guardado) || $guardado[0]["id_cliente"] != $_SESSION["id_cliente"]) {
+            $success = false;
+            $msg = "Ese vehículo no es tuyo";
+            break;
+        }
+
+        if ($vehiculo["matricula"] == "" || $vehiculo["marca"] == "" || $vehiculo["modelo"] == "") {
+            $success = false;
+            $msg = "La matrícula, la marca y el modelo son obligatorios";
+            break;
+        }
+
+        $vehiculoA = new Vehiculo($vehiculo["id_vehiculo"], $_SESSION["id_cliente"], $vehiculo["matricula"], $vehiculo["marca"], $vehiculo["modelo"],
+            $vehiculo["anio"] == "" ? null : $vehiculo["anio"],
+            $vehiculo["color"] == "" ? null : $vehiculo["color"],
+            $vehiculo["kilometros"] == "" ? null : $vehiculo["kilometros"],
+            $vehiculo["combustible"] == "" ? null : $vehiculo["combustible"]);
+        $success = $vehiculoA->updateVehiculo();
+        $msg = $success ? "Vehículo actualizado correctamente" : "No se pudo actualizar el vehículo (puede que la matrícula ya esté registrada)";
         break;
-    case "update":
-        actualizarVehiculo($datos);
+
+    case "deleteVehiculo":
+        if (!isset($_SESSION["rol"]) || $_SESSION["rol"] != "cliente") {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        //Antes de borrar se comprueba que el vehiculo es del cliente de la sesion
+        $vehiculoA = new Vehiculo($request["data"][0]["id_vehiculo"]);
+        $guardado = $vehiculoA->obtenerVehiculo();
+        if (empty($guardado) || $guardado[0]["id_cliente"] != $_SESSION["id_cliente"]) {
+            $success = false;
+            $msg = "Ese vehículo no es tuyo";
+            break;
+        }
+
+        $success = $vehiculoA->deleteVehiculo();
+        //Si el vehiculo tiene citas no se puede borrar (la FK de cita tiene ON DELETE RESTRICT)
+        $msg = $success ? "Vehículo borrado correctamente" : "No se puede borrar el vehículo porque tiene citas";
         break;
-    case "delete":
-        borrarVehiculo($datos);
-        break;
+
     default:
-        enviarRespuesta(false, "Accion no reconocida");
+        $success = false;
+        $msg = "Accion no reconocida";
+        break;
 }
 
-//Valida los datos del formulario del vehículo y devuelve la lista de errores
-function validarVehiculo(array $datos): array {
-    $errores = [];
-    if (!validarMatricula($datos["matricula"])) {
-        $errores[] = "La matrícula no es válida (ej: 1234BCD)";
-    }
-    if ($datos["marca"] == "" || $datos["modelo"] == "") {
-        $errores[] = "La marca y el modelo son obligatorios";
-    }
-    if ($datos["anio"] !== "" && ($datos["anio"] < 1900 || $datos["anio"] > date("Y") + 1)) {
-        $errores[] = "El año no es válido";
-    }
-    if ($datos["kilometros"] !== "" && $datos["kilometros"] < 0) {
-        $errores[] = "Los kilómetros no pueden ser negativos";
-    }
-    return $errores;
-}
-
-//Limpia los datos que llegan del formulario
-function limpiarVehiculo(array $datos): array {
-    return [
-        "matricula"   => strtoupper(str_replace([" ", "-"], "", $datos["matricula"] ?? "")),
-        "marca"       => trim($datos["marca"] ?? ""),
-        "modelo"      => trim($datos["modelo"] ?? ""),
-        "anio"        => trim($datos["anio"] ?? ""),
-        "color"       => trim($datos["color"] ?? ""),
-        "kilometros"  => trim($datos["kilometros"] ?? ""),
-        "combustible" => trim($datos["combustible"] ?? "")
-    ];
-}
-
-function insertarVehiculo(array $datos): void {
-    comprobarSesion();
-    $v = limpiarVehiculo($datos);
-    $errores = validarVehiculo($v);
-    if (!empty($errores)) {
-        enviarRespuesta(false, implode(". ", $errores));
-    }
-
-    $vehiculo = new Vehiculo(null, $datos["id_cliente"] ?? null, $v["matricula"], $v["marca"],
-                             $v["modelo"], $v["anio"], $v["color"], $v["kilometros"], $v["combustible"]);
-    if (!$vehiculo->insertVehiculo()) {
-        enviarRespuesta(false, "No se pudo guardar el vehículo (¿la matrícula ya existe?)");
-    }
-    enviarRespuesta(true, "Vehículo guardado");
-}
-
-function obtenerVehiculo(array $datos): void {
-    comprobarSesion();
-    $vehiculo = new Vehiculo($datos["id_vehiculo"] ?? null);
-    $resultado = $vehiculo->obtenerVehiculo();
-    if (empty($resultado)) {
-        enviarRespuesta(false, "No se encontró el vehículo");
-    }
-    enviarRespuesta(true, "", $resultado);
-}
-
-function obtenerVehiculosCliente(array $datos): void {
-    comprobarSesion();
-    $vehiculo = new Vehiculo(null, $datos["id_cliente"] ?? null);
-    $resultado = $vehiculo->obtenerPorCliente();
-    if ($resultado === false) {
-        enviarRespuesta(false, "No se pudieron obtener los vehículos");
-    }
-    enviarRespuesta(true, "", $resultado); //puede ser un array vacío si no tiene vehículos
-}
-
-function actualizarVehiculo(array $datos): void {
-    comprobarSesion();
-    $v = limpiarVehiculo($datos);
-    $errores = validarVehiculo($v);
-    if (!empty($errores)) {
-        enviarRespuesta(false, implode(". ", $errores));
-    }
-
-    $vehiculo = new Vehiculo($datos["id_vehiculo"] ?? null, null, $v["matricula"], $v["marca"],
-                             $v["modelo"], $v["anio"], $v["color"], $v["kilometros"], $v["combustible"]);
-    if (!$vehiculo->updateVehiculo()) {
-        enviarRespuesta(false, "No se pudo actualizar el vehículo");
-    }
-    enviarRespuesta(true, "Vehículo actualizado");
-}
-
-function borrarVehiculo(array $datos): void {
-    comprobarSesion();
-    $vehiculo = new Vehiculo($datos["id_vehiculo"] ?? null);
-    if (!$vehiculo->deleteVehiculo()) {
-        enviarRespuesta(false, "No se pudo borrar el vehículo (¿tiene citas?)");
-    }
-    enviarRespuesta(true, "Vehículo borrado");
-}
+//Se envia la respuesta con el formato { data, success, msg }
+enviarRespuesta($success, $msg, $data);

@@ -37,7 +37,7 @@ function registrarUsuario() {
 
     //el fetch lo hacemos para enviar al servidor los datos del usuario en formato JSON,
     //ya que el backend espera recibir los datos en este formato para poder procesarlos correctamente
-    fetch(url, {
+    fetch(urlUsuario, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {

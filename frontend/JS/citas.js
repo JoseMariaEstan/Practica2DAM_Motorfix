@@ -16,7 +16,7 @@ function cargarCitas() {
     request.action = "misCitas";
     request.data = [];
 
-    fetch(url, {
+    fetch(urlCita, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {
@@ -86,7 +86,7 @@ function cancelarCita() {
         id_cita: id_cita
     }];
 
-    fetch(url, {
+    fetch(urlCita, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {

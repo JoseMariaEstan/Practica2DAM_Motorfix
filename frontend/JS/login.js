@@ -25,7 +25,7 @@ function loginUsuario() {
     request.action = "login";
     request.data = [usuario];
 
-    fetch(url, {
+    fetch(urlUsuario, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {

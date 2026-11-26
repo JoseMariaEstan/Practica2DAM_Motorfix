@@ -1,189 +1,155 @@
 <?php
 /* =====================================================================
-   sw.usuario.php - Servicio de usuarios
-   Acciones: registro, login, logout, get, update, updateContra, delete
+   sw.usuario.php - Servicio web de usuarios
+   Acciones: login, registro, sesion, logout y listarMecanicos (panel de oficina)
+   La parte comun (sesion, leer la peticion, clases...) esta en sw.pagina.php
    ===================================================================== */
-require_once "sw.comun.php";
-require_once "Usuario.php";
-require_once "Cliente.php";
+require_once __DIR__ . "/sw.pagina.php";
 
-$request = leerPeticion();
-$datos = $request["data"][0] ?? [];
-
-switch ($request["action"] ?? "") { //el ?? evita un warning si no llega ninguna accion
-    case "registro":
-        registrarUsuario($datos);
-        break;
+switch ($request["action"]) {
     case "login":
-        loginUsuario($datos);
+        $email = $request["data"][0]["email"];
+        $password = $request["data"][0]["password"];
+
+        //Se busca el usuario por su email
+        $usuarioA = new Usuario(null, $email);
+        $resultado = $usuarioA->obtenerPorEmail();
+
+        if ($resultado === false) {
+            $success = false;
+            $msg = "Error al consultar la base de datos";
+        } else if (empty($resultado) || !$usuarioA->verificarPassword($password, $resultado[0]["password"])) {
+            //Mismo mensaje si no existe el email o si la contraseña esta mal,
+            //asi no se puede saber que emails estan registrados
+            $success = false;
+            $msg = "Email o contraseña incorrectos";
+        } else {
+            $usuario = $resultado[0];
+            unset($usuario["password"]); //la contraseña no se devuelve nunca
+
+            //Guardamos en la sesion quien ha entrado y con que rol
+            $_SESSION["id_usuario"] = $usuario["id_usuario"];
+            $_SESSION["nombre"] = $usuario["nombre"];
+            $_SESSION["rol"] = $usuario["rol"];
+
+            //Si es cliente guardamos tambien su id_cliente, que es el que usan sus vehiculos y citas
+            if ($usuario["rol"] == "cliente") {
+                $clienteA = new Cliente(null, $usuario["id_usuario"]);
+                $_SESSION["id_cliente"] = $clienteA->obtenerPorUsuario()[0]["id_cliente"];
+            }
+
+            $data = [$usuario];
+            $msg = "Bienvenido, " . $usuario["nombre"];
+        }
         break;
+
+    case "registro":
+        //Se le pasan todos los datos del formulario de registro
+        $usuario = $request["data"][0];
+        $usuario["dni"] = strtoupper($usuario["dni"]);
+
+        //Comprobaciones en el servidor (el JS se puede saltar)
+        if (!preg_match('/^[0-9]{8}[A-Z]$/', $usuario["dni"])) {
+            $success = false;
+            $msg = "El DNI tiene que tener 8 números y una letra";
+            break;
+        }
+        if (!filter_var($usuario["email"], FILTER_VALIDATE_EMAIL)) {
+            $success = false;
+            $msg = "El email no es válido";
+            break;
+        }
+        if ($usuario["password"] != $usuario["password2"]) {
+            $success = false;
+            $msg = "Las contraseñas no coinciden";
+            break;
+        }
+
+        //El email no puede estar ya registrado
+        $usuarioA = new Usuario(null, $usuario["email"]);
+        if (!empty($usuarioA->obtenerPorEmail())) {
+            $success = false;
+            $msg = "Ya existe una cuenta con ese email";
+            break;
+        }
+
+        //1. Se crea el usuario (datos de acceso). La contraseña la cifra insertUsuario
+        $usuarioA = new Usuario(null, $usuario["email"], $usuario["password"], $usuario["nombre"], $usuario["apellidos"], "cliente", 1);
+        $success = $usuarioA->insertUsuario();
+        if (!$success) {
+            $msg = "No se pudo crear el usuario";
+            break;
+        }
+
+        //2. Se crea su ficha de cliente con el id del usuario que se acaba de crear
+        $clienteA = new Cliente(null, $usuarioA->getIdUsuario(), $usuario["dni"], $usuario["nombre"], $usuario["apellidos"], $usuario["telefono"], $usuario["email"]);
+        $success = $clienteA->insertCliente();
+        if (!$success) {
+            //Si falla el cliente borramos el usuario, para que no quede un usuario sin ficha
+            $usuarioA->deleteUsuario();
+            $msg = "No se pudo crear el cliente (puede que el DNI ya esté registrado)";
+            break;
+        }
+
+        //Como despues del registro entra directamente al area de cliente, iniciamos ya su sesion
+        $_SESSION["id_usuario"] = $usuarioA->getIdUsuario();
+        $_SESSION["nombre"] = $usuario["nombre"];
+        $_SESSION["rol"] = "cliente";
+        $_SESSION["id_cliente"] = $clienteA->getIdCliente();
+
+        $data = [[
+            "id_usuario" => $usuarioA->getIdUsuario(),
+            "nombre" => $usuario["nombre"],
+            "email" => $usuario["email"]
+        ]];
+        $msg = "Cuenta creada correctamente";
+        break;
+
+    case "sesion":
+        //Lo llama cada panel al cargarse para saber si hay alguien dentro y quien es
+        if (!isset($_SESSION["id_usuario"])) {
+            $success = false;
+            $msg = "No has iniciado sesión";
+        } else {
+            $data = [[
+                "id_usuario" => $_SESSION["id_usuario"],
+                "nombre" => $_SESSION["nombre"],
+                "rol" => $_SESSION["rol"]
+            ]];
+        }
+        break;
+
     case "logout":
-        logoutUsuario();
+        //Borra los datos de la sesion y la cierra
+        $_SESSION = [];
+        session_destroy();
+        $msg = "Sesión cerrada";
         break;
-    case "get":
-        obtenerUsuario();
+
+    case "listarMecanicos":
+        //Para rellenar el desplegable de "Asignar mecanico"
+        if (!$esOficina) {
+            $success = false;
+            $msg = "No tienes permiso para hacer esto";
+            break;
+        }
+
+        $usuarioA = new Usuario();
+        $resultado = $usuarioA->obtenerMecanicos();
+        if ($resultado === false) {
+            $success = false;
+            $msg = "Error al obtener los mecánicos";
+        } else {
+            $data = $resultado;
+            $msg = "Mecánicos obtenidos correctamente";
+        }
         break;
-    case "update":
-        actualizarUsuario($datos);
-        break;
-    case "updateContra":
-        actualizarContra($datos);
-        break;
-    case "delete":
-        borrarUsuario($datos);
-        break;
+
     default:
-        enviarRespuesta(false, "Accion no reconocida");
+        $success = false;
+        $msg = "Accion no reconocida";
+        break;
 }
 
-//Registro: crea el usuario y su cliente asociado
-function registrarUsuario(array $datos): void {
-    //Datos que llegan del formulario, ya limpios
-    $nombre    = trim($datos["nombre"] ?? "");
-    $apellidos = trim($datos["apellidos"] ?? "");
-    $dni       = strtoupper(trim($datos["dni"] ?? ""));
-    $telefono  = trim($datos["telefono"] ?? "");
-    $email     = strtolower(trim($datos["email"] ?? ""));
-    $password  = $datos["password"] ?? "";
-    $password2 = $datos["password2"] ?? "";
-
-    $errores = [];
-    if ($nombre == "" || $apellidos == "") {
-        $errores[] = "El nombre y los apellidos son obligatorios";
-    }
-    if (!validarDni($dni)) {
-        $errores[] = "El DNI no tiene un formato válido (8 números y una letra)";
-    }
-    if (!validarTelefono($telefono)) {
-        $errores[] = "El teléfono debe tener 9 números";
-    }
-    if (!validarEmail($email)) {
-        $errores[] = "El email no es válido";
-    }
-    if (!validarPassword($password)) {
-        $errores[] = "La contraseña debe tener al menos 8 caracteres";
-    }
-    if ($password != $password2) {
-        $errores[] = "Las contraseñas no coinciden";
-    }
-    if (!empty($errores)) {
-        enviarRespuesta(false, implode(". ", $errores));
-    }
-
-    //Comprobamos que el email no este ya registrado
-    $usuarioBuscar = new Usuario(null, $email);
-    if (!empty($usuarioBuscar->getByEmail())) {
-        enviarRespuesta(false, "Ya existe una cuenta con ese email");
-    }
-
-    //Transaccion: o se guardan el usuario y el cliente, o no se guarda ninguno
-    $conexion = BD::getInstance()->getConexion();
-    $conexion->beginTransaction();
-
-    //1. Se crea el usuario (la contraseña la cifra insertUsuario)
-    $usuarioA = new Usuario(null, $email, $password, $nombre, $apellidos, "cliente", 1);
-    if (!$usuarioA->insertUsuario()) {
-        $conexion->rollBack();
-        enviarRespuesta(false, "No se pudo crear el usuario");
-    }
-
-    //2. Se crea el cliente con el id del usuario que se acaba de crear
-    $clienteA = new Cliente(null, $usuarioA->getIdUsuario(), $dni, $nombre, $apellidos, $telefono, $email);
-    if (!$clienteA->insertCliente()) {
-        $conexion->rollBack();
-        enviarRespuesta(false, "No se pudo crear el cliente (¿el DNI ya está registrado?)");
-    }
-
-    $conexion->commit();
-
-    //Nunca devolvemos la contraseña
-    enviarRespuesta(true, "Cuenta creada correctamente", [[
-        "id_usuario" => $usuarioA->getIdUsuario(),
-        "id_cliente" => $clienteA->getIdCliente(),
-        "nombre"     => $nombre,
-        "email"      => $email
-    ]]);
-}
-
-//Login: comprueba email y contraseña y guarda el usuario en la sesión
-function loginUsuario(array $datos): void {
-    $email    = strtolower(trim($datos["email"] ?? ""));
-    $password = $datos["password"] ?? "";
-
-    $usuario = new Usuario(null, $email);
-    $resultado = $usuario->getByEmail();
-
-    //Mismo mensaje si no existe el email o si la contraseña está mal (no damos pistas)
-    if (empty($resultado) || !$usuario->verificarPassword($password, $resultado[0]["password"])) {
-        enviarRespuesta(false, "Email o contraseña incorrectos");
-    }
-
-    $fila = $resultado[0];
-    $_SESSION["id_usuario"] = $fila["id_usuario"];
-    $_SESSION["rol"]        = $fila["rol"];
-    $_SESSION["nombre"]     = $fila["nombre"];
-
-    enviarRespuesta(true, "Bienvenido, " . $fila["nombre"], [[
-        "id_usuario" => $fila["id_usuario"],
-        "nombre"     => $fila["nombre"],
-        "rol"        => $fila["rol"]
-    ]]);
-}
-
-function logoutUsuario(): void {
-    session_destroy();
-    enviarRespuesta(true, "Sesión cerrada");
-}
-
-//Devuelve los datos del usuario logueado
-function obtenerUsuario(): void {
-    comprobarSesion();
-    $usuario = new Usuario($_SESSION["id_usuario"]);
-    $resultado = $usuario->obtenerUsuario();
-    if ($resultado === false) {
-        enviarRespuesta(false, "No se pudo obtener el usuario");
-    }
-    enviarRespuesta(true, "", $resultado);
-}
-
-function actualizarUsuario(array $datos): void {
-    comprobarSesion(["admin"]);
-    $email = strtolower(trim($datos["email"] ?? ""));
-    if (!validarEmail($email)) {
-        enviarRespuesta(false, "El email no es válido");
-    }
-    $usuario = new Usuario($datos["id_usuario"] ?? null, $email, null,
-                           trim($datos["nombre"] ?? ""), trim($datos["apellidos"] ?? ""),
-                           $datos["rol"] ?? "cliente", $datos["activo"] ?? 1);
-    if (!$usuario->updateUsuario()) {
-        enviarRespuesta(false, "No se pudo actualizar el usuario");
-    }
-    enviarRespuesta(true, "Usuario actualizado");
-}
-
-//Cambia la contraseña del usuario logueado
-function actualizarContra(array $datos): void {
-    comprobarSesion();
-    $password  = $datos["password"] ?? "";
-    $password2 = $datos["password2"] ?? "";
-    if (!validarPassword($password)) {
-        enviarRespuesta(false, "La contraseña debe tener al menos 8 caracteres");
-    }
-    if ($password != $password2) {
-        enviarRespuesta(false, "Las contraseñas no coinciden");
-    }
-    $usuario = new Usuario($_SESSION["id_usuario"], null, $password);
-    if (!$usuario->updateContra()) {
-        enviarRespuesta(false, "No se pudo cambiar la contraseña");
-    }
-    enviarRespuesta(true, "Contraseña cambiada");
-}
-
-function borrarUsuario(array $datos): void {
-    comprobarSesion(["admin"]);
-    $usuario = new Usuario($datos["id_usuario"] ?? null);
-    if (!$usuario->deleteUsuario()) {
-        enviarRespuesta(false, "No se pudo borrar el usuario");
-    }
-    enviarRespuesta(true, "Usuario borrado");
-}
+//Se envia la respuesta con el formato { data, success, msg }
+enviarRespuesta($success, $msg, $data);

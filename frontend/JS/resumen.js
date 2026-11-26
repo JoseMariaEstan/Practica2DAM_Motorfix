@@ -11,7 +11,7 @@ function resumenVehiculos() {
     request.action = "misVehiculos";
     request.data = [];
 
-    fetch(url, {
+    fetch(urlVehiculo, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {
@@ -51,7 +51,7 @@ function resumenCitas() {
     request.action = "misCitas";
     request.data = [];
 
-    fetch(url, {
+    fetch(urlCita, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {

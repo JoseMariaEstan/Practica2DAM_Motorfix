@@ -15,7 +15,7 @@ function cargarVehiculosCita() {
     request.action = "misVehiculos";
     request.data = [];
 
-    fetch(url, {
+    fetch(urlVehiculo, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {
@@ -73,7 +73,7 @@ function pedirCita() {
     request.action = "pedirCita";
     request.data = [cita];
 
-    fetch(url, {
+    fetch(urlCita, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {

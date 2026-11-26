@@ -1,15 +1,52 @@
 <?php
 /* =====================================================================
-   sw.comun.php - Código genérico que usan todos los sw.*.php
-   - Respuesta JSON, leer la petición y devolver la respuesta
-   - Control de sesión
-   - Validaciones reutilizables
+   sw.pagina.php - Código común que usan todos los sw.*.php
+   Cada sw.*.php hace require de este archivo en la primera línea, y con eso ya tiene:
+   - Las clases del modelo
+   - La sesión iniciada y la respuesta en JSON
+   - $request con la petición, y $success, $msg y $data preparados
+   - $esOficina y $esMecanico para comprobar permisos
+   - Funciones para responder, comprobar la sesión y validar datos
    ===================================================================== */
 
+//Las clases estan en la carpeta de arriba (modelo), por eso el /../
+require_once __DIR__ . "/../Usuario.php";
+require_once __DIR__ . "/../Cliente.php";
+require_once __DIR__ . "/../Vehiculo.php";
+require_once __DIR__ . "/../Cita.php";
+require_once __DIR__ . "/../ManoObra.php";
+require_once __DIR__ . "/../Repuesto.php";
+require_once __DIR__ . "/../Factura.php";
+
+//Arranca la sesion. PHP guarda los datos en el servidor y le da al navegador
+//una cookie (PHPSESSID) para reconocerlo en las siguientes peticiones
 session_start();
 
 //Indicar que es una respuesta JSON, es decir, para que la web reconozca el archivo
 header("Content-Type: application/json; charset=UTF-8");
+
+//Zona horaria de España, para que time() y date() den la hora de aqui al comprobar las fechas de las citas
+date_default_timezone_set("Europe/Madrid");
+
+// Obtener el contenido del cuerpo de la petición
+$contenidoJSON = file_get_contents('php://input');
+// Usa true como segundo parametro para obtener un array asociativo en lugar de un objeto
+$request = json_decode($contenidoJSON, true);
+
+$success = true;
+$msg = "";
+$data = [];
+
+//Si la peticion no trae accion, la dejamos vacia para que vaya al default
+if (!isset($request["action"])) {
+    $request["action"] = "";
+}
+
+//Oficina y admin pueden usar las acciones del panel de oficina
+$esOficina = isset($_SESSION["rol"]) && ($_SESSION["rol"] == "oficina" || $_SESSION["rol"] == "admin");
+
+//Las acciones del panel del mecanico solo las puede usar un mecanico
+$esMecanico = isset($_SESSION["rol"]) && $_SESSION["rol"] == "mecanico";
 
 /* ---------- Petición y respuesta ---------- */
 

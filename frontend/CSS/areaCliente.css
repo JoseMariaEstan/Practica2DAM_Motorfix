@@ -41,8 +41,9 @@ body.areaCliente {
     margin: 0 0 8px;
 }
 
-/* Textos en gris */
-.areaCliente .textoGris {
+/* Textos en gris (el saludo de debajo del título está en todas las páginas) */
+.areaCliente .textoGris,
+.areaCliente .saludo p {
     color: #5F6670;
 }
 
@@ -168,6 +169,10 @@ body.areaCliente {
 .areaCliente .contenido {
     max-width: 1100px;
     padding: 32px 24px;
+}
+
+.areaCliente .saludo {
+    margin-bottom: 24px;
 }
 
 /* Tarjetas blancas (el aviso de "Pedir cita" está en resumen.css) */

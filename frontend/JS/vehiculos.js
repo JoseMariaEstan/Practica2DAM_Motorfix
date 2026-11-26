@@ -36,7 +36,7 @@ function cargarVehiculos() {
     request.action = "misVehiculos";
     request.data = [];
 
-    fetch(url, {
+    fetch(urlVehiculo, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {
@@ -165,7 +165,7 @@ function insertarVehiculo() {
     request.action = "insertVehiculo";
     request.data = [vehiculo];
 
-    fetch(url, {
+    fetch(urlVehiculo, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {
@@ -211,7 +211,7 @@ function actualizarVehiculo() {
     request.action = "updateVehiculo";
     request.data = [vehiculo];
 
-    fetch(url, {
+    fetch(urlVehiculo, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {
@@ -249,7 +249,7 @@ function borrarVehiculo() {
         id_vehiculo: listaVehiculos[elegido].id_vehiculo
     }];
 
-    fetch(url, {
+    fetch(urlVehiculo, {
         method: "POST",
         body: JSON.stringify(request),
         headers: {
