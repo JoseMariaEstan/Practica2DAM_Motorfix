@@ -1,0 +1,176 @@
+/* =====================================================================
+   COMÚN - lo cargan TODAS las páginas y siempre el primero
+   Estilos base, login (index.html) y registro (registroUsuario.html)
+   ===================================================================== */
+
+* {
+    box-sizing: border-box; /* el padding no suma al ancho: evita que los inputs se salgan */
+}
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    color: #1F2328;
+    background-color: #F5F6F8;
+    /* La página ocupa toda la altura y el footer se queda abajo */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centra la tarjeta cuando la section va directa en el body */
+}
+/*Login y registro*/
+/* ---------- Cabecera ---------- */
+header {
+    width: 100%;
+    background-color: #1F2328;
+    padding: 16px 20px;
+}
+
+header a {
+    color: #FFFFFF;
+    font-size: 22px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* ---------- Contenido (login: la section va dentro de main) ---------- */
+main {
+    width: 100%;
+    flex: 1; /* ocupa el espacio libre entre header y footer */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 16px;
+}
+
+/* Tarjeta blanca: crece hasta 440px y en pantallas pequeñas ocupa el 100% */
+section {
+    width: 100%;
+    max-width: 440px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 32px 28px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Registro: la section va directa en el body, sin main que le dé margen */
+body > section {
+    width: calc(100% - 32px);
+    margin: 40px 0;
+}
+
+h1 {
+    margin: 0 0 20px;
+    font-size: 26px;
+}
+
+/* Subtítulo del registro: sin la negrita que trae el h4 por defecto */
+h4 {
+    margin: -12px 0 24px;
+    font-size: 16px;
+    font-weight: normal;
+    color: #5F6670;
+}
+
+section > p {
+    color: #5F6670;
+}
+
+/* ---------- Formulario ---------- */
+fieldset {
+    border: 1px solid #D0D4DA;
+    border-radius: 8px;
+    padding: 12px 16px 4px;
+    margin: 0 0 20px;
+}
+
+legend {
+    padding: 0 6px;
+    font-weight: bold;
+    color: #5F6670;
+}
+
+/* Cada grupo etiqueta + campo */
+form div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+label {
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px; /* 16px evita que el móvil haga zoom al escribir */
+    border: 1px solid #D0D4DA;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+}
+
+input:focus {
+    outline: none;
+    border-color: #F26B1D;
+    box-shadow: 0 0 0 3px rgba(242, 107, 29, 0.2);
+}
+
+small {
+    margin-top: 4px;
+    color: #5F6670;
+    font-size: 13px;
+}
+
+/* ---------- Mensaje de error / éxito ---------- */
+#mensaje {
+    min-height: 20px; /* reserva el hueco para que el formulario no "salte" al aparecer */
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ---------- Botón ---------- */
+button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #FFFFFF;
+    background-color: #F26B1D;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #D45A12;
+}
+
+/* ---------- "¿Ya tienes cuenta?" (último div de la tarjeta del registro) ---------- */
+section > div:last-child {
+    margin-top: 20px;
+    color: #5F6670;
+}
+
+/* ---------- Enlaces ---------- */
+section a {
+    color: #F26B1D;
+    font-weight: bold;
+}
+
+/* ---------- Pie ---------- */
+footer {
+    margin-top: auto; /* empuja el footer al final de la página */
+    text-align: center;
+    padding: 16px;
+    font-size: 14px;
+    color: #5F6670;
+}
+
+footer p,
+footer div {
+    margin: 0;
+}

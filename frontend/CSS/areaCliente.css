@@ -1,0 +1,301 @@
+/* =====================================================================
+   ÁREA DE CLIENTE - lo cargan todas las páginas del área de cliente,
+   siempre DESPUÉS de comun.css (tiene que ir detrás para poder anular
+   las reglas del login, por ejemplo el button:hover)
+   Todo va dentro de .areaCliente (clase del <body>)
+   para que las reglas del login no afecten a estas pantallas
+   ===================================================================== */
+
+/* ---------- Anular las reglas del login en esta página ---------- */
+body.areaCliente {
+    display: block;
+}
+
+.areaCliente section {
+    max-width: none;
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+}
+
+.areaCliente button {
+    width: auto;
+    padding: 0;
+    font-size: 15px;
+    font-weight: normal;
+    color: inherit;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.areaCliente h1 {
+    margin: 0 0 8px;
+}
+
+.areaCliente h2 {
+    margin: 0 0 12px;
+    font-size: 18px;
+}
+
+.areaCliente p {
+    margin: 0 0 8px;
+}
+
+/* Textos en gris */
+.areaCliente .textoGris {
+    color: #5F6670;
+}
+
+.areaCliente .textoGris {
+    font-size: 14px;
+}
+
+/* ---------- Estructura: menú lateral + zona principal ---------- */
+/* flex-wrap: si no caben juntos (pantalla menor de 860px = 220 + 640),
+   el menú se coloca arriba ocupando todo el ancho */
+.areaCliente .contenedor {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100vh;
+}
+
+.areaCliente .menuLateral {
+    flex: 1 0 220px;
+    background-color: #1F2328;
+    padding: 20px 16px;
+}
+
+.areaCliente .zonaPrincipal {
+    flex: 999 1 640px;
+    min-width: 0; /* evita que el contenido largo ensanche la página */
+    display: block;
+    padding: 0;
+}
+
+/* ---------- Menú lateral ---------- */
+.areaCliente .cajaLogo {
+    margin-bottom: 24px;
+}
+
+.areaCliente .logo {
+    margin: 0;
+    color: #FFFFFF;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* Las opciones se colocan en filas: en el menú lateral cabe una por fila
+   y en el móvil se ponen varias por fila */
+.areaCliente .menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.areaCliente .tituloMenu {
+    flex-basis: 100%; /* el título del menú ocupa su propia fila */
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #9AA1AB;
+    letter-spacing: 1px;
+}
+
+/* Las opciones del menu son enlaces <a> a cada pagina del area de cliente */
+.areaCliente .item_nav {
+    flex: 1 1 140px; /* cada opción mide al menos 140px y crece para llenar la fila */
+    padding: 10px 12px;
+    font-size: 15px;
+    text-decoration: none; /* quita el subrayado que traen los enlaces */
+    text-align: left;
+    color: #D0D4DA;
+    border-radius: 6px;
+}
+
+.areaCliente .item_nav:hover {
+    background-color: #2D333B;
+    color: #FFFFFF;
+}
+
+/* Opción del menú en la que estamos */
+.areaCliente .item_nav.seleccionado {
+    background-color: #F26B1D;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+/* ---------- Barra superior ---------- */
+.areaCliente .barraSuperior {
+    display: flex;
+    flex-wrap: wrap; /* en el móvil el bloque del usuario baja debajo del título */
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #D0D4DA;
+}
+
+.areaCliente .tituloPagina {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.areaCliente .datosSesion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.areaCliente .nombreUsuario {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Etiqueta de estado (Cliente, Confirmada...) */
+.areaCliente .etiqueta {
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #D45A12;
+    background-color: #FDEBDD;
+    border-radius: 12px;
+}
+
+/* ---------- Contenido ---------- */
+.areaCliente .contenido {
+    max-width: 1100px;
+    padding: 32px 24px;
+}
+
+/* Tarjetas blancas (el aviso de "Pedir cita" está en resumen.css) */
+.areaCliente .tarjeta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.areaCliente .tarjeta .etiqueta {
+    margin-bottom: 12px;
+}
+
+/* ---------- Botones ---------- */
+/* Botón que parece un enlace (se queda abajo en cada tarjeta) */
+.areaCliente .enlaceTarjeta {
+    margin-top: auto;
+    font-size: 15px;
+    padding-top: 12px;
+    font-weight: bold;
+    color: #F26B1D;
+    text-decoration: underline;
+}
+
+.areaCliente .botonNaranja,
+.areaCliente .botonBlanco {
+    padding: 10px 18px;
+    font-size: 15px;
+    text-decoration: none; /* por si el boton es un enlace <a> */
+    font-weight: bold;
+    border-radius: 6px;
+}
+
+/* Botón principal naranja (igual que en el login) */
+.areaCliente .botonNaranja {
+    color: #FFFFFF;
+    background-color: #F26B1D;
+}
+
+/* Botón secundario con borde gris */
+.areaCliente .botonBlanco {
+    background-color: #FFFFFF;
+    border: 1px solid #D0D4DA;
+}
+
+.areaCliente .botonNaranja:hover {
+    background-color: #D45A12;
+}
+
+.areaCliente .botonBlanco:hover {
+    border-color: #F26B1D;
+    color: #F26B1D;
+}
+
+.areaCliente .enlaceTarjeta:hover {
+    color: #D45A12;
+}
+
+/* ---------- Tablas (Mis vehículos y Mis citas) ---------- */
+/* La tabla arriba y el formulario debajo, separados */
+.areaCliente .bloqueVehiculos,
+.areaCliente .bloqueTablas {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* La tabla ocupa todo el ancho de la tarjeta */
+.areaCliente .cajaTabla {
+    width: 100%;
+}
+
+/* Si la tabla no cabe (móvil), se hace scroll solo dentro de la tarjeta */
+.areaCliente .cajaTabla {
+    overflow-x: auto;
+}
+
+.areaCliente .tablaVehiculos,
+.areaCliente .tablaDatos {
+    width: 100%;
+    border-collapse: collapse; /* une los bordes de las celdas en una sola línea */
+}
+
+.areaCliente .tablaVehiculos th,
+.areaCliente .tablaVehiculos td,
+.areaCliente .tablaDatos th,
+.areaCliente .tablaDatos td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #D0D4DA;
+    white-space: nowrap; /* que la matrícula o el modelo no se partan en dos líneas */
+}
+
+.areaCliente .tablaVehiculos th,
+.areaCliente .tablaDatos th {
+    font-size: 14px;
+    color: #5F6670;
+}
+
+/* ---------- Formularios (Mis vehículos, Pedir cita y Mis citas) ---------- */
+/* El selector de vehículo, el mensaje y los botones ocupan toda la fila */
+.areaCliente .filaCompleta {
+    grid-column: 1 / -1;
+}
+
+/* Los desplegables con el mismo aspecto que los input */
+.areaCliente select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid #D0D4DA;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+}
+
+.areaCliente select:focus {
+    outline: none;
+    border-color: #F26B1D;
+    box-shadow: 0 0 0 3px rgba(242, 107, 29, 0.2);
+}
+
+/* Los botones en fila (el "form div" de comun.css los pondría en columna) */
+.areaCliente form .botonesFormulario {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+}

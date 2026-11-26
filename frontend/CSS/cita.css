@@ -1,0 +1,16 @@
+/* =====================================================================
+   MIS CITAS (citas.html)
+   Se carga después de comun.css y areaCliente.css
+   ===================================================================== */
+
+/* El formulario de cancelar ocupa todo el ancho de su tarjeta */
+.areaCliente .bloqueTablas form {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* La celda del motivo puede ocupar varias líneas (si no, la tabla sería muy ancha) */
+.areaCliente .tablaDatos td.celdaMotivo {
+    white-space: normal;
+    min-width: 200px;
+}
